@@ -14,7 +14,9 @@ const Section = sequelize.define("Section", {
     timestamps: true,
 });
 
-Section.belongsTo(Stadium,{foreignKey : 'stadiumId'});
-Section.hasMany(Seat,{foreignKey : 'sectionId'});
+Section.associations = (models) => {
+    Section.belongsTo(Stadium,{foreignKey : 'stadiumId'});
+    Section.hasMany(Seat,{foreignKey : 'sectionId'});
+};
 
 export default Section;

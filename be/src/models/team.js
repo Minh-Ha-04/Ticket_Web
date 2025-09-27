@@ -13,7 +13,9 @@ const Team = sequelize.define("Team", {
     timestamps: true,
 });
 
-Team.belongsTo(Stadium,{foreignKey : 'stadiumId'});
+Team.associations = (models) => {
+    Team.belongsTo(Stadium,{foreignKey : 'stadiumId'});
+};
 
 
 export default Team;

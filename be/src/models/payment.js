@@ -14,6 +14,8 @@ const Payment = sequelize.define("Payment", {
     timestamps: true,
 });
 
-Payment.belongsTo(Booking,{foreignKey : 'bookingId'});
+Payment.associations = (models) => {
+    Payment.belongsTo(Booking,{foreignKey : 'bookingId'});
+};
 
 export default Payment;

@@ -1,4 +1,4 @@
-import sequelize from "../config/db";
+import sequelize from "../config/db.js";
 import { DataTypes } from "sequelize";
 
 import Match from "./match.js";
@@ -18,9 +18,11 @@ const Ticket = sequelize.define("Ticket", {
     timestamps: true,
 });
 
-Ticket.belongsTo(Match, {foreignKey :'macthId'});
-Ticket.belongsTo(Seat, {foreignKey :'seatId'});
-Ticket.belongsTo(Booking, {foreignKey :'bookingId'});
-Ticket.belongsTo(Cart, {foreignKey :'cartId'});
+Ticket.associations = (models) => {
+    Ticket.belongsTo(Match, {foreignKey :'macthId'});
+    Ticket.belongsTo(Seat, {foreignKey :'seatId'});
+    Ticket.belongsTo(Booking, {foreignKey :'bookingId'});
+    Ticket.belongsTo(Cart, {foreignKey :'cartId'});
+}
 
 export default Ticket;

@@ -12,6 +12,8 @@ const Stadium = sequelize.define("Stadium", {
     timestamps: true,
 });
 
-Stadium.hasMany(Section,{foreignKey : 'stadiumId'});
+Stadium.associations = (models) => {
+    Stadium.hasMany(Section,{foreignKey : 'stadiumId'});
+};
 
 export default Stadium;

@@ -13,6 +13,8 @@ const Booking = sequelize.define("Booking", {
     timestamps: true,
 });
 
-Booking.belongsTo(User,{foreignKey : 'userId'});
+Booking.associations = (models) => {
+    Booking.belongsTo(User,{foreignKey : 'userId'});
+};
 
 export default Booking;

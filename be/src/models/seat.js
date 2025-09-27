@@ -12,6 +12,9 @@ const Seat = sequelize.define("Seat", {
     timestamps: true,
 });
 
-Seat.belongsTo(Section,{foreignKey : 'sectionId'});
+Seat.associations = (models) => {
+    Seat.belongsTo(Section,{foreignKey : 'sectionId'});
+};
+
 
 export default Seat;

@@ -12,10 +12,11 @@ const Match = sequelize.define("Match", {
     timestamps: true,
 });
 
-Match.belongsTo(Team,{as : 'homeTeam',foreignKey : 'homeTeamId'});
-Match.belongsTo(Team,{as : 'awayTeam', foreignKey : 'awayTeam'});
-Match.belongsTo(Stadium,{foreignKey : 'stadiumId'});
-
+Match.associations = (models) => {
+    Match.belongsTo(Team,{as : 'homeTeam',foreignKey : 'homeTeamId'});
+    Match.belongsTo(Team,{as : 'awayTeam', foreignKey : 'awayTeam'});
+    Match.belongsTo(Stadium,{foreignKey : 'stadiumId'});
+};
 
 
 export default Match;

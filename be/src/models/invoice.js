@@ -13,6 +13,8 @@ const Invoice = sequelize.define("Invoice", {
     timestamps: true,
 });
 
-Invoice.belongsTo(Booking,{foreignKey : 'bookingId'});
+Invoice.associations = (models) => {
+    Invoice.belongsTo(Booking,{foreignKey : 'bookingId'});
+};
 
 export default Invoice;

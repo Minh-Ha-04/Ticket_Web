@@ -1,5 +1,7 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/db";
+import sequelize from "../config/db.js";
+
+import Booking from "./booking.js";
 
 const User = sequelize.define("User", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -12,6 +14,8 @@ const User = sequelize.define("User", {
     timestamps: true,
 });
 
-User.hasMany(Booking,{foreignKey : 'userId'});
+User.associations = (models) => {
+    User.hasMany(Booking,{foreignKey : 'userId'});
+};
 
 export default User;
