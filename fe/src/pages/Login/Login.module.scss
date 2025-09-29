@@ -1,0 +1,100 @@
+@import "../../styles/variables"; // import biến global
+
+.wrapper {
+    background-color: $background-color;
+}   
+
+.header {
+  text-align: center;
+
+  img{
+    margin-top: $spacing-lg;
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+  .title {
+    font-size: 32px;
+    font-weight: 600;
+    color: $text-color;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: lighten($text-color, 20%);
+  }
+}
+
+.content {
+  padding: 16px 20px;
+  width: 100%;
+  max-width: 400px;
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        margin-bottom: 4px;
+        font-weight: 500;
+        color: $text-color;
+      }
+
+      input {
+        padding: 8px 12px;
+        border: 1px solid lighten($text-color, 60%);
+        border-radius: 6px;
+        font-size: $font-size-base;
+        transition: border 0.3s;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
+        }
+      }
+    }
+
+    .register-link {
+      display: block;
+      margin-top: 8px;
+      text-align: center;
+    }
+  }
+
+  .login-google {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+
+    img{
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+  }
+}
+
+.toggle-link {
+    margin-top: 12px;
+    text-align: center;
+    color: $primary-color;
+    cursor: pointer;
+    font-size: 14px;
+  
+    &:hover {
+      text-decoration: underline;
+    }
+  }

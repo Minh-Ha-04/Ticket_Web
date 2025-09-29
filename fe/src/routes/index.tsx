@@ -5,8 +5,7 @@ import LayoutAuth from "../layouts/LayoutAuth";
 
 import Home from "../pages/Home";
 import Ticket from "../pages/Ticket";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
+import Login from "../pages/Login/Login";
 const routes : RouteObject[] = [
     {
         element: <LayoutDefault />,
@@ -19,8 +18,7 @@ const routes : RouteObject[] = [
     {
         element: <LayoutAuth />,
         children:[
-            {path: "/login",element:<Login />},
-            {path: "/register",element:<Register />}
+            {path: "/login",element:<Login />}
         ]
     }
 
