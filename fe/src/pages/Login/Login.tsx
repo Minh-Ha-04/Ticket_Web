@@ -3,6 +3,7 @@ import classNames from "classnames/bind";
 
 import {Button} from "antd";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [isRegister, setIsRegister] =  useState(false);
@@ -13,7 +14,7 @@ function Login() {
   <div className={cx("wrapper")}>
 
     <header className={cx("header")}>
-      <img src="/logo192.png" alt="Logo" className={cx("logo")} />
+      <Link to="/"><img src="/logo192.png" alt="Logo" className={cx("logo")} /></Link>
       <h1 className={cx("title")}>Welcome</h1>
       <p className={cx("subtitle")}>
         {isRegister  ? "Please register to create an account" : "Please log in to your account"}

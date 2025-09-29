@@ -4,7 +4,7 @@ const { Footer } = Layout;
 
 const FooterBar = () => (
   <Footer style={{ textAlign: "center" }}>
-    © {new Date().getFullYear()} Premier League News
+  Real Madrid © {new Date().getFullYear()}. All rights reserved.
   </Footer>
 );
 

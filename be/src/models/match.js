@@ -4,8 +4,8 @@ import sequelize from "../config/db.js";
 
 const Match = sequelize.define("Match", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    homeTeam: { type: DataTypes.STRING, allowNull: false },
-    awayTeam: { type: DataTypes.STRING, allowNull: false },
+    homeTeamId: { type: DataTypes.INTEGER, allowNull: false },
+    awayTeamId: { type: DataTypes.INTEGER, allowNull: false },
     matchDate: { type: DataTypes.DATE, allowNull: false },
     stadiumId: { type: DataTypes.STRING, allowNull: false },
 }, {
@@ -14,7 +14,7 @@ const Match = sequelize.define("Match", {
 
 Match.associations = (models) => {
     Match.belongsTo(Team,{as : 'homeTeam',foreignKey : 'homeTeamId'});
-    Match.belongsTo(Team,{as : 'awayTeam', foreignKey : 'awayTeam'});
+    Match.belongsTo(Team,{as : 'awayTeam', foreignKey : 'awayTeamId'});
     Match.belongsTo(Stadium,{foreignKey : 'stadiumId'});
 };
 
