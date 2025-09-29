@@ -1,0 +1,28 @@
+@import "../../styles/variables.scss"; 
+
+
+.wrapper {
+  width: 100%;
+  height: 70px;
+  background: $background-color;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 $spacing-md;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);;
+}
+.left img {
+  height: 50px;
+  object-fit: contain;
+}
+.center a {
+  text-decoration: none;
+  color: $text-color;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $primary-color;
+  }
+}
+
