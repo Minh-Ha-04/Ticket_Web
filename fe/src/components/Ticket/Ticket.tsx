@@ -16,7 +16,6 @@ interface TicketProps {
   };
 }
 
-
 function Ticket({ticket}: TicketProps) {
   const cx = classNames.bind(styles);
   return (

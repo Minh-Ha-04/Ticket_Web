@@ -4,7 +4,7 @@ import LayoutDefault from "../layouts/LayoutDefault";
 import LayoutAuth from "../layouts/LayoutAuth";
 
 import Home from "../pages/Home";
-import Ticket from "../pages/Ticket";
+import Ticket from "../pages/Tickets";
 import Login from "../pages/Login/Login";
 const routes : RouteObject[] = [
     {
