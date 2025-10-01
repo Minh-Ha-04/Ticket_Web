@@ -21,6 +21,8 @@ function StadiumAdmin() {
   const [capacity, setCapacity] = useState<number | "">("");
   const [isHome, setIsHome] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   // Lấy danh sách sân từ backend
   useEffect(() => {
@@ -63,22 +65,25 @@ function StadiumAdmin() {
     setEditingId(stadium.id);
   };
 
-  const handleDelete = (id: number) => {
-    Modal.confirm({
-      title: 'Xóa sân',
-      content: 'Bạn có chắc chắn muốn xóa sân này?',
-      okText: 'Xóa',
-      cancelText: 'Hủy',
-      onOk: async () => {
-        try {
-          await instance.delete(`/stadiums/${id}`);
-          fetchStadiums();
-        } catch (err) {
-          console.error(err);
-          alert("Xóa thất bại!");
-        }
-      },
-    });
+  const showDeleteModal = (id: number) => {
+    console.log("Delete clicked, id =", id);
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      await instance.delete(`/stadiums/${deleteId}`);
+      fetchStadiums();
+      alert("Xóa thành công!");
+    } catch (err) {
+      console.error(err);
+      alert("Xóa thất bại!");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setDeleteId(null);
+    }
   };
 
   return (
@@ -118,12 +123,24 @@ function StadiumAdmin() {
               <td>{stadium.isHome ? "Có" : "Không"}</td>
               <td>
                 <button onClick={() => handleEdit(stadium)}>Sửa</button>
-                <button onClick={() => handleDelete(stadium.id)}>Xóa</button>
+                <button onClick={() => showDeleteModal(stadium.id)}>Xóa</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <Modal
+        title="Xóa sân"
+        open={isDeleteModalOpen}
+        onOk={handleConfirmDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn xóa sân này?</p>
+      </Modal>
+
     </div>
   );
 }
