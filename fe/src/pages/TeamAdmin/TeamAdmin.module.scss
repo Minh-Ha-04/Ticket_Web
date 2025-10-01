@@ -1,0 +1,39 @@
+.team-admin {
+    padding: 20px;
+    h2 {
+      margin-bottom: 20px;
+    }
+    .team-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+  
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        label {
+          margin-bottom: 5px;
+          font-weight: 500;
+        }
+        input, select {
+          padding: 8px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+        }
+      }
+  
+      button {
+        width: 120px;
+        padding: 10px;
+        background-color: #1890ff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+          background-color: #40a9ff;
+        }
+      }
+    }
+  }
+  

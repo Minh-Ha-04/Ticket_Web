@@ -9,6 +9,7 @@ const Stadium = sequelize.define("Stadium", {
     capacity : { type: DataTypes.INTEGER, allowNull: true },
     isHome: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
 }, {
+    tableName : "stadiums",
     timestamps: true,
 });
 
