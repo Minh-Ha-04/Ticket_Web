@@ -1,0 +1,10 @@
+import * as seatController from "../controllers/seatController.js";
+import express from "express";
+
+const router = express.Router();
+
+router.get("/",seatController.getAllSeats);
+router.post("/",seatController.createSeat);
+router.put("/:id",seatController.updateSeat);
+
+export default router;
