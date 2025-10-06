@@ -34,8 +34,6 @@ Object.keys(models).forEach((modelName) => {
       );
     } catch (error) {
       console.error("Error syncing database:", error);
-    } finally {
-      await sequelize.close(); // Đóng kết nối sau khi hoàn tất
     }
   })();
 

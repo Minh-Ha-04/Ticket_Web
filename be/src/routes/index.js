@@ -12,7 +12,7 @@ router.use('/auth', authRoutes);
 router.use('/tickets', ticketRoutes);
 router.use('/stadiums',stadiumRoutes);
 router.use('/teams',teamRoutes);
-router.use('/section',sectionRoutes);
-router.use('/seat',seatRoutes);
+router.use('/sections',sectionRoutes);
+router.use('/seats',seatRoutes);
 
 export default router;

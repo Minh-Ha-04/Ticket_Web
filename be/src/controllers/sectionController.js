@@ -2,13 +2,13 @@ import * as sectionService from "../services/sectionService.js";
 
 export const getAllSections = async(req,res) =>{
     try{
-        const {stadiumId} = req.query;
+        const {stadiumId } = req.params;
         const sections = await sectionService.getAllSections(stadiumId);
-        res.json(sections);
+        res.json({sections});
     }
     catch(err)
     {
-        err.status(500).json({message : err.message});
+        res.status(500).json({message : err.message});
     }
 } 
 
@@ -38,7 +38,7 @@ export const updateSection = async(req,res) =>{
 
 export const deleteSection = async(req,res) =>{
     try{
-        const id = req.params;
+        const {id} = req.params;
         await sectionService.deleteSection(id);
         res.json({ message: "Delete  section successfully" });
     }

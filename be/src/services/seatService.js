@@ -1,5 +1,6 @@
-import Seat from "../models/seat";
-import Section from "../models/section";
+import Seat from "../models/seat.js";
+import Section from "../models/section.js";
+
 
 export const getAllSeats = async(sectionId) =>{
     return await Seat.findAll({

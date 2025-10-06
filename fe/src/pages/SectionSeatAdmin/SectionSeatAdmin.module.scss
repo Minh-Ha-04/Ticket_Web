@@ -1,0 +1,67 @@
+.wrapper {
+    padding: 24px;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+  }
+  
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+  
+    &:hover {
+      box-shadow: 0 6px 26px rgba(0, 0, 0, 0.12);
+    }
+  }
+  
+  .title {
+    color: #1e293b;
+    margin-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  
+  .form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  
+    .submit-btn {
+      background-color: #1677ff;
+      border-radius: 8px;
+      font-weight: 600;
+  
+      &:hover {
+        background-color: #4096ff !important;
+      }
+    }
+  
+    .cancel-btn {
+      border-radius: 8px;
+      margin-left: 8px;
+    }
+  }
+  
+  .table {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: white;
+  
+    .ant-table-thead > tr > th {
+      background-color: #f0f5ff;
+      font-weight: 600;
+      color: #1e293b;
+    }
+  
+    .ant-table-tbody > tr:hover > td {
+      background-color: #e6f4ff !important;
+    }
+  }
+  

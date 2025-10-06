@@ -1,9 +1,10 @@
 // StadiumAdmin.tsx
 import { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from './StadiumAdmin.module.scss';
 import classNames from 'classnames/bind';
 import instance from "../../utils/axiosInstance";
-import {Modal} from 'antd';
+import {Modal,Button} from 'antd';
 
 
 const cx = classNames.bind(styles);
@@ -86,6 +87,11 @@ function StadiumAdmin() {
     }
   };
 
+  const navigate = useNavigate();
+  const handleManageSections = (id: number) => {
+    navigate(`/admin/stadiums/${id}/sections`);
+  };
+
   return (
     <div className={cx('stadium-admin')}>
       <h2>{editingId ? "Cập nhật sân" : "Tạo sân mới"}</h2>
@@ -120,7 +126,12 @@ function StadiumAdmin() {
             <tr key={stadium.id}>
               <td>{stadium.name}</td>
               <td>{stadium.capacity}</td>
-              <td>{stadium.isHome ? "Có" : "Không"}</td>
+              <td>{stadium.isHome ? (
+                <Button type="primary" onClick={() => handleManageSections(stadium.id)}>
+                Settings
+                </Button>
+              )
+              : "Không"}</td>
               <td>
                 <button onClick={() => handleEdit(stadium)}>Sửa</button>
                 <button onClick={() => showDeleteModal(stadium.id)}>Xóa</button>

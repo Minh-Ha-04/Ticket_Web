@@ -13,6 +13,7 @@ import MatchAdmin from "../pages/MatchAdmin";
 import TicketAdmin from "../pages/TicketAdmin";
 import Admin from "../pages/Admin";
 import StadiumAdmin from "../pages/StadiumAdmin";
+import SectionSeatAdmin from "../pages/SectionSeatAdmin";
 
 const routes : RouteObject[] = [
     {
@@ -37,6 +38,7 @@ const routes : RouteObject[] = [
             {path: "matches",element:<MatchAdmin />},
             {path: "tickets",element:<TicketAdmin />},
             {path: "stadiums",element: <StadiumAdmin />},
+            {path: "stadiums/:id/sections",element: <SectionSeatAdmin/>}
         ]
     }
 

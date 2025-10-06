@@ -1,47 +1,48 @@
-import Section from "../models/section.js";
-import Stadium from "../models/stadium.js";
-import Seat from "../models/seat.js";
+import models from '../models/index.js';
+const { Seat, Stadium, Section } = models;
 
+// 🧱 Lấy tất cả section của 1 sân
+export const getAllSections = async (stadiumId) => {
+  return await Section.findAll({
+    where: { stadiumId },
+    include: [
+      {
+        model: Stadium,
+        as: "stadium",
+        attributes: ["name"],
+      },
+    ],
+    order: [["name", "ASC"]],
+  });
+};
 
-export const getAllSections = async(stadiumId)=>{
-    return await Section.findAll({
-        where :{stadiumId},
-        include :[
-            {
-                model :Stadium,
-                attributes : ["name"],
-            }
-        ],
-        order:[["name","ASC"]],
-    });
-}
+export const createSection = async (data) => {
+  const { name, seatCount, price, stadiumId } = data;
+  if (!name || !seatCount || !price || !stadiumId) {
+    throw new Error("Thiếu dữ liệu bắt buộc!");
+  }
+  const section = await Section.create({ name, seatCount, price, stadiumId });
 
-export const createSection = async(data)=>{
+  const seats = Array.from({ length: seatCount }, (_, i) => ({
+    number: `${section.name}-${i + 1}`,
+    sectionId: section.id,
+  }));
 
-    const section = await Section.create(data);
+  await Seat.bulkCreate(seats);
 
-    for (let i = 1 ; i<=data.seatCount;i++)
-    {
-        await Seat.create(
-            {
-                number:`${section.name}`-`${i}`,
-                sectionId : section.id
-            }
-        );
-    }
+  return section;
+};
 
-    return section;
-}
+export const updateSection = async (id, data) => {
+  const section = await Section.findByPk(id);
+  if (!section) throw new Error("Section không tồn tại!");
+  return await section.update(data);
+};
 
-export const updateSection = async(id,data)=>{
-    const section = await Section.findByPk(id);
-    if(!section) throw new Error("Section can't find");
-    return await section.update(data);
-}
-
-export const deleteSection = async(id,data)=>{
-    const section = await Section.findByPk(id);
-    if(!section) throw new Error("Section can't find");
-    return await section.destroy(data);
-}
-
+export const deleteSection = async (id) => {
+  const section = await Section.findByPk(id);
+  if (!section) throw new Error("Section không tồn tại!");
+  await Seat.destroy({ where: { sectionId: id } });
+  await section.destroy();
+  return { message: "Đã xóa khu vực và ghế liên quan." };
+};
