@@ -43,7 +43,7 @@ function SectionSeatAdmin() {
   const fetchSections = async () => {
     try {
       const res = await instance.get(`/sections/stadium/${stadiumId}`);
-      setSections(res.data);
+      setSections(res.data.sections);
     } catch (err) {
       console.error("❌ Lỗi khi tải khu vực:", err);
       message.error("Không thể tải danh sách khu vực!");
