@@ -1,14 +1,14 @@
 import * as seatService from "../services/seatService.js";
 
-export const getAllSeats =  async(req,res)=>{
+export const getSeatsInSection =  async(req,res)=>{
     try{
-        const {sectionId} = req.query;
-        const seats = await seatService.getAllSeats(sectionId);
+        const {sectionId} = req.params;
+        const seats = await seatService.getSeatsInSection(sectionId);
         res.json(seats);
     }
     catch(err)
     {
-        err.json(500).json({message:err.message});
+        res.status(500).json({message:err.message});
     }
 }
 
@@ -20,7 +20,7 @@ export const createSeat = async(req,res)=>{
     }
     catch(err)
     {
-        err.json(500).json({message:err.message});
+        res.status(500).json({message:err.message});
     }
 }
 
@@ -33,6 +33,6 @@ export const updateSeat = async(req,res)=>{
     }
     catch(err)
     {
-        err.json(500).json({message:err.message});
+        res.status(500).json({message:err.message});
     }
 }

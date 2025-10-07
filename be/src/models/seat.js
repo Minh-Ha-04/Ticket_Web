@@ -1,7 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-import Section from "./section.js";
 
 const Seat = sequelize.define("Seat", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -12,8 +11,8 @@ const Seat = sequelize.define("Seat", {
     timestamps: true,
 });
 
-Seat.associations = (models) => {
-    Seat.belongsTo(Section,{foreignKey : 'sectionId'});
+Seat.associate = (models) => {
+    Seat.belongsTo(models.Section,{foreignKey : 'sectionId',as : 'section'});
 };
 
 

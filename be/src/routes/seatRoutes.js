@@ -3,7 +3,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/section/:sectionId",seatController.getAllSeats);
+router.get("/section/:sectionId",seatController.getSeatsInSection);
 router.post("/",seatController.createSeat);
 router.put("/:id",seatController.updateSeat);
 
