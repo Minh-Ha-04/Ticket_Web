@@ -13,6 +13,21 @@ export const getAllMatches = async()=>{
     return matches;
 }
 
+export const getMatchAtHome = async () => {
+      const HOME_STADIUM_ID = process.env.HOME_STADIUM_ID ;
+
+      const matches = await Match.findAll({
+        where: { stadiumId: HOME_STADIUM_ID },
+        include: [
+          { model: Team, as: "homeTeam", attributes: ["id", "name",'logo'] },
+          { model: Team, as: "awayTeam", attributes: ["id", "name",'logo'] },
+          { model: Stadium, attributes: ["id", "name"] },
+        ],
+        order: [["matchDate", "ASC"]],
+      });
+      return matches;
+}
+
 export const getMatchbyId = async(matchId)=>{
     const match = await Match.findByPk(matchId);
     if(!match) {

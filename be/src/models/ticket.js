@@ -1,11 +1,6 @@
 import sequelize from "../config/db.js";
 import { DataTypes } from "sequelize";
 
-import Match from "./match.js";
-import Seat from "./seat.js";
-import Booking from "./booking.js";
-import Cart from "./cart.js";
-
 const Ticket = sequelize.define("Ticket", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     price: { type: DataTypes.FLOAT, allowNull: false },
@@ -17,13 +12,17 @@ const Ticket = sequelize.define("Ticket", {
     cartId : { type: DataTypes.INTEGER, allowNull: true},
 }, {
     timestamps: true,
+    indexes: [
+        { fields: ["matchId"] },
+        { fields: ["seatId"] },
+      ],
 });
 
-Ticket.associations = (models) => {
-    Ticket.belongsTo(Match, {foreignKey :'macthId'});
-    Ticket.belongsTo(Seat, {foreignKey :'seatId'});
-    Ticket.belongsTo(Booking, {foreignKey :'bookingId'});
-    Ticket.belongsTo(Cart, {foreignKey :'cartId'});
+Ticket.associate = (models) => {
+    Ticket.belongsTo(models.Match, {foreignKey :'matchId',as:'match'});
+    Ticket.belongsTo(models.Seat, {foreignKey :'seatId',as:'seat'});
+    Ticket.belongsTo(models.Booking, {foreignKey :'bookingId',as:'booking'});
+    Ticket.belongsTo(models.Cart, {foreignKey :'cartId',as:'cart'});
 }
 
 export default Ticket;

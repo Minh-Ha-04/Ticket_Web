@@ -4,6 +4,7 @@ import express from "express";
 const router = express.Router();
 
 router.get("/",matchController.getAllMatches);
+router.get("/home",matchController.getMatchAtHome);
 router.get("/:id",matchController.getMatchbyId);
 router.post("/",matchController.creatMatch);
 router.put("/:id",matchController.updateMatch);

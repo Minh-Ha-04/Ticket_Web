@@ -27,7 +27,7 @@ Object.keys(models).forEach((modelName) => {
 
 (async () => {
     try {
-      await sequelize.sync({ alter: true }); // Tạo hoặc cập nhật bảng
+      await sequelize.sync({ alter: true });
       console.log(
         "Database synced successfully at",
         new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })

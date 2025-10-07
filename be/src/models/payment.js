@@ -1,8 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-import Booking from "./booking.js";
-
 const Payment = sequelize.define("Payment", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     amount: { type: DataTypes.FLOAT, allowNull: false },
@@ -14,8 +12,8 @@ const Payment = sequelize.define("Payment", {
     timestamps: true,
 });
 
-Payment.associations = (models) => {
-    Payment.belongsTo(Booking,{foreignKey : 'bookingId'});
+Payment.associate = (models) => {
+    Payment.belongsTo(models.Booking,{foreignKey : 'bookingId',as:'booking'});
 };
 
 export default Payment;

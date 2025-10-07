@@ -11,6 +11,17 @@ export const getAllMatches = async(req,res)=>{
     }
 }
 
+export const getMatchAtHome = async(req,res)=>{
+    try {
+        const matches = await matchService.getMatchAtHome();
+        res.json(matches);
+    }
+    catch(err)
+    {
+        res.status(500).json({message : err.message});
+    }
+}
+
 export const getMatchbyId = async(req,res)=>{
     try{
         const {id}= req.params;

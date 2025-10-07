@@ -3,6 +3,6 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/', ticketController.getAllTicket);
+router.post('/generate/:matchId', ticketController.generateTickets);
 
 export  default router;

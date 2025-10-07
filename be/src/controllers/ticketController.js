@@ -1,14 +1,14 @@
 import * as ticketService from "../services/ticketService.js";
 
-export const getAllTicket = async (req, res) => {
+export const generateTickets = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const pageSize = parseInt(req.query.pageSize) || 10;
-        const result = await ticketService.getAllTickets(page, pageSize);
-        res.status(200).json(result);
+      const { matchId } = req.params;
+  
+      await ticketService.generateTicketsForHomeTeam(matchId);
+  
+      res.status(201).json({message: `Tạo vé thành công cho trận đấu ${matchId}`,});
+    } catch (error) {
+      console.error("Lỗi khi tạo vé:", error);
+      res.status(500).json({message: error.message || "Lỗi server khi tạo vé"});
     }
-    catch (error) {
-        res.status(500).json({message: error.message || "Internal Server Error"});
-    }
-};
-
+  };
