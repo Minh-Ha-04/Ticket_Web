@@ -83,7 +83,7 @@ function MatchAdmin() {
         homeTeamId: match.homeTeamId,
         awayTeamId: match.awayTeamId,
         stadiumId: match.stadiumId,
-        matchDate: dayjs(match.matchDate,"HH:mm DD-MM-YYYY"),
+        matchDate: dayjs(match.matchDate),
       });
     } else {
       setEditingMatch(null);
@@ -96,7 +96,7 @@ function MatchAdmin() {
     try {
       const payload = {
         ...values,
-        matchDate: values.matchDate.format("HH:mm DD-MM-YYYY"),
+        matchDate: values.matchDate.format("YYYY-MM-DD HH:mm:ss"),
       };
       if (editingMatch) {
         console.log(payload);
@@ -168,7 +168,7 @@ function MatchAdmin() {
       title: "Ngày thi đấu",
       dataIndex: "matchDate",
       key: "matchDate",
-      render: (date: string) => dayjs(date, "HH:mm DD-MM-YYYY").format("HH:mm DD/MM/YYYY"),
+      render: (date: string) => dayjs(date).format("HH:mm DD/MM/YYYY"),
     },
     {
       title: "Hành động",
