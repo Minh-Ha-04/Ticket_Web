@@ -5,7 +5,6 @@ const Ticket = sequelize.define("Ticket", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     price: { type: DataTypes.FLOAT, allowNull: false },
     status: { type: DataTypes.ENUM('available', 'sold','canceled'), allowNull: false, defaultValue: 'available' },
-    posterUrl: { type: DataTypes.STRING, allowNull: true },
     matchId : { type: DataTypes.INTEGER, allowNull: false},
     seatId : { type: DataTypes.INTEGER, allowNull: false},
     bookingId : { type: DataTypes.INTEGER, allowNull: true},

@@ -4,10 +4,6 @@ import cloudinary from "../utils/cloudinary.js";
 
 export const createTeam = async (req, res) => {
   try {
-    console.log("===== CREATE TEAM REQUEST =====");
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
     const { name, shortname, stadiumId } = req.body;
     const file = req.file;
 
@@ -30,10 +26,6 @@ export const createTeam = async (req, res) => {
 
 export const updateTeam = async (req, res) => {
   try {
-    console.log("===== UPDATE TEAM REQUEST =====");
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
     const id = req.params.id;
     const team = await teamService.getTeamById(id);
     if (!team) {

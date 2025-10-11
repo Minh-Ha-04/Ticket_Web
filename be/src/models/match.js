@@ -8,6 +8,9 @@ const Match = sequelize.define("Match", {
     awayTeamId: { type: DataTypes.INTEGER, allowNull: false },
     matchDate: { type: DataTypes.DATE, allowNull: false },
     stadiumId: { type: DataTypes.INTEGER, allowNull: false },
+    isTicketCreated: {type :DataTypes.BOOLEAN,allowNull :false,defaultValue:false},
+    poster: { type: DataTypes.STRING, allowNull: true },
+    posterPublicId : {type :DataTypes.STRING, allowNull :true}
 }, {
     timestamps: true,
 });

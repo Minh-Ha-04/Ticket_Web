@@ -2,10 +2,22 @@ import { useEffect, useState } from "react";
 import styles from "./TicketAdmin.module.scss";
 import classNames from "classnames/bind";
 import instance from "../../utils/axiosInstance";
-import { Table, Button, Space, message, Typography } from "antd";
-import { EyeOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Space,
+  message,
+  Typography,
+  Modal,
+  InputNumber,
+  Upload
+} from "antd";
+import {UploadOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface";
 import dayjs from "dayjs";
+
 const cx = classNames.bind(styles);
+const stadiumId = process.env.REACT_APP_HOME_STADIUM_ID;
 
 interface Match {
   id: number;
@@ -13,26 +25,49 @@ interface Match {
   awayTeamId: number;
   matchDate: string;
   stadiumId: number;
-  homeTeam : Team;
-  awayTeam : Team;
+  isTicketCreated: boolean;
+  homeTeam: Team;
+  awayTeam: Team;
 }
 
 interface Team {
   id: number;
   name: string;
-  logo:string;
+  logo: string;
+}
+
+interface Section {
+  id: number;
+  name: string;
+  seatCount: number;
+  price: number;
 }
 
 function TicketAdmin() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const fetchMatches = async () => {
     try {
       const res = await instance.get("/matches/home");
-      console.log(res.data);
       setMatches(res.data);
     } catch (err) {
       message.error("Không tải được danh sách trận đấu!");
+    }
+  };
+
+  const fetchSections = async () => {
+    try {
+      const res = await instance.get(`/sections/stadium/${stadiumId}`);
+      setSections(res.data.sections);
+    } catch (err) {
+      console.error("❌ Lỗi khi tải khu vực:", err);
+      message.error("Không thể tải danh sách khu vực!");
     }
   };
 
@@ -42,17 +77,59 @@ function TicketAdmin() {
 
   const handleViewTickets = (matchId: number) => {
     message.info(`Xem vé cho trận đấu ID: ${matchId}`);
-    // Có thể navigate đến /tickets/:matchId nếu bạn làm trang chi tiết vé riêng
   };
 
   const handleAddTickets = (matchId: number) => {
-    message.success(`Thêm vé cho trận đấu ID: ${matchId}`);
-    // Có thể mở Modal tạo vé mới
+    setSelectedMatchId(matchId);
+    fetchSections();
+    setIsModalOpen(true);
   };
 
-  const handleDeleteTickets = (matchId: number) => {
-    message.warning(`Xóa toàn bộ vé của trận đấu ID: ${matchId}`);
-    // Gọi API delete ticket theo matchId
+  const showDeleteModal = (matchId: number) => {
+    setDeleteId(matchId);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await instance.delete(`/tickets/${deleteId}`);
+      fetchMatches();
+      alert("Xóa thành công!");
+    } catch (err) {
+      console.error(err);
+      alert("Xóa thất bại!");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setDeleteId(null);
+    }
+  };
+  
+
+  const handleModalOk = async () => {
+    try {
+      const formData = new FormData();
+      if (posterFile) formData.append("poster", posterFile);
+  
+      // Gửi mảng section giá vé
+      formData.append("sections", JSON.stringify(
+        sections.map((s) => ({ sectionId: s.id, price: s.price }))
+      ));
+  
+      await instance.post(`/tickets/generate/${selectedMatchId}`, formData);
+  
+      alert("Tạo vé và poster thành công!");
+      setIsModalOpen(false);
+      setPosterFile(null);
+      fetchMatches();
+    } catch (err) {
+      console.error(err);
+      alert("Tạo vé thất bại!");
+    }
+  };
+  const handlePriceChange = (sectionId: number, value: number) => {
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, price: value } : s))
+    );
   };
 
   const columns = [
@@ -77,36 +154,41 @@ function TicketAdmin() {
       ),
     },
     {
-          title: "Ngày thi đấu",
-          dataIndex: "matchDate",
-          key: "matchDate",
-          render: (date: string) => dayjs(date).format("HH:mm DD/MM/YYYY"),
-        },
+      title: "Ngày thi đấu",
+      dataIndex: "matchDate",
+      key: "matchDate",
+      render: (date: string) => dayjs(date).format("HH:mm DD/MM/YYYY"),
+    },
     {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: Match) => (
         <Space>
-          <Button
-            icon={<EyeOutlined />}
-            onClick={() => handleViewTickets(record.id)}
-          >
-            Xem vé
-          </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => handleAddTickets(record.id)}
-          >
-            Thêm vé
-          </Button>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDeleteTickets(record.id)}
-          >
-            Xóa vé
-          </Button>
+          {record.isTicketCreated ? (
+            <>
+              <Button
+                icon={<EyeOutlined />}
+                onClick={() => handleViewTickets(record.id)}
+              >
+                Xem vé
+              </Button>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() =>showDeleteModal(record.id)}
+              >
+                Xóa vé
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => handleAddTickets(record.id)}
+            >
+              Thêm vé
+            </Button>
+          )}
         </Space>
       ),
     },
@@ -115,7 +197,6 @@ function TicketAdmin() {
   return (
     <div className={cx("TicketAdmin")}>
       <Typography.Title level={3}>Quản lý vé sân nhà</Typography.Title>
-
       <Table
         style={{ marginTop: 16 }}
         rowKey="id"
@@ -123,6 +204,51 @@ function TicketAdmin() {
         columns={columns}
         pagination={false}
       />
+
+      <Modal
+        title="Tạo vé cho các khu vực"
+        open={isModalOpen}
+        onOk={handleModalOk}
+        onCancel={() => setIsModalOpen(false)}
+        okText="Tạo vé"
+      >
+        <div style={{ marginBottom: 16 }}>
+          <strong>Ảnh poster:</strong>
+          <Upload
+            beforeUpload={(file) => {
+              setPosterFile(file);
+              return false; // ngăn upload tự động
+            }}
+            maxCount={1}
+          >
+            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+          </Upload>
+          {posterFile && <p>Đã chọn: {posterFile.name}</p>}
+        </div>
+
+        {sections.map((section) => (
+          <div key={section.id} style={{ marginBottom: 12 }}>
+            <span>{section.name} ({section.seatCount} ghế): </span>
+            <InputNumber
+              min={0}
+              value={section.price}
+              onChange={(value) => handlePriceChange(section.id, value as number)}
+            />
+          </div>
+        ))}
+      </Modal>
+
+      <Modal
+        title="Xóa sân"
+        open={isDeleteModalOpen}
+        onOk={handleConfirmDelete}
+        onCancel={() => setIsDeleteModalOpen(false)}
+        okText="Xóa"
+        cancelText="Hủy"
+      >
+        <p>Bạn có chắc chắn muốn xóa vé trận này?</p>
+      </Modal>
+
     </div>
   );
 }
