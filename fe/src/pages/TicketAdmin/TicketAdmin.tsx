@@ -13,7 +13,6 @@ import {
   Upload
 } from "antd";
 import {UploadOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import type { UploadFile } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 
 const cx = classNames.bind(styles);
@@ -49,6 +48,10 @@ function TicketAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [posterFile, setPosterFile] = useState<File | null>(null);
+
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
@@ -66,7 +69,7 @@ function TicketAdmin() {
       const res = await instance.get(`/sections/stadium/${stadiumId}`);
       setSections(res.data.sections);
     } catch (err) {
-      console.error("❌ Lỗi khi tải khu vực:", err);
+      console.error("Lỗi khi tải khu vực:", err);
       message.error("Không thể tải danh sách khu vực!");
     }
   };
@@ -84,6 +87,23 @@ function TicketAdmin() {
     fetchSections();
     setIsModalOpen(true);
   };
+
+  const fetchTicketSections = async (matchId: number) => {
+    try {
+      const res = await instance.get(`/tickets/match/${matchId}`);
+      setSections(res.data.sections);
+    } catch (err) {
+      console.error("Lỗi khi tải giá vé từ ticket:", err);
+    }
+  };
+  
+  const handleUpdateTickets = (matchId: number) => {
+    setSelectedMatchId(matchId);
+    setIsUpdateMode(true);
+    fetchTicketSections(matchId);
+    setIsModalOpen(true);
+  };
+  
 
   const showDeleteModal = (matchId: number) => {
     setDeleteId(matchId);
@@ -109,17 +129,27 @@ function TicketAdmin() {
     try {
       const formData = new FormData();
       if (posterFile) formData.append("poster", posterFile);
-  
-      // Gửi mảng section giá vé
+
       formData.append("sections", JSON.stringify(
         sections.map((s) => ({ sectionId: s.id, price: s.price }))
       ));
-  
-      await instance.post(`/tickets/generate/${selectedMatchId}`, formData);
-  
-      alert("Tạo vé và poster thành công!");
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      };
+
+      if (isUpdateMode) {
+        await instance.put(`/tickets/${selectedMatchId}`, formData,config);
+        alert("Cập nhật vé thành công!");
+      } else {
+        await instance.post(`/tickets/generate/${selectedMatchId}`, formData,config);
+        alert("Tạo vé thành công!");
+      }
       setIsModalOpen(false);
       setPosterFile(null);
+      setIsUpdateMode(false);
       fetchMatches();
     } catch (err) {
       console.error(err);
@@ -173,6 +203,12 @@ function TicketAdmin() {
                 Xem vé
               </Button>
               <Button
+              type="default"
+              onClick={() => handleUpdateTickets(record.id)}
+              >
+              Cập nhật vé
+              </Button>
+              <Button
                 danger
                 icon={<DeleteOutlined />}
                 onClick={() =>showDeleteModal(record.id)}
@@ -205,13 +241,16 @@ function TicketAdmin() {
         pagination={false}
       />
 
-      <Modal
-        title="Tạo vé cho các khu vực"
-        open={isModalOpen}
-        onOk={handleModalOk}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Tạo vé"
-      >
+        <Modal
+          title={isUpdateMode ? "Cập nhật vé & poster" : "Tạo vé cho các khu vực"}
+          open={isModalOpen}
+          onOk={handleModalOk}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setIsUpdateMode(false);
+          }}
+          okText={isUpdateMode ? "Lưu thay đổi" : "Tạo vé"}
+        >
         <div style={{ marginBottom: 16 }}>
           <strong>Ảnh poster:</strong>
           <Upload
@@ -239,7 +278,7 @@ function TicketAdmin() {
       </Modal>
 
       <Modal
-        title="Xóa sân"
+        title="Xóa vé"
         open={isDeleteModalOpen}
         onOk={handleConfirmDelete}
         onCancel={() => setIsDeleteModalOpen(false)}
