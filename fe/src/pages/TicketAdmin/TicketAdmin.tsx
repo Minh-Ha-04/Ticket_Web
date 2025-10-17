@@ -48,6 +48,11 @@ function TicketAdmin() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [posterPreview, setPosterPreview] = useState<string | null>(null);
+
+
+  const [matchPoster, setMatchPoster] = useState<string | null>(null);
+
 
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
@@ -91,7 +96,9 @@ function TicketAdmin() {
   const fetchTicketSections = async (matchId: number) => {
     try {
       const res = await instance.get(`/tickets/match/${matchId}`);
-      setSections(res.data.sections);
+      console.log(res.data);
+      setSections(res.data.sections.sections);
+      setMatchPoster(res.data.sections.match || null);
     } catch (err) {
       console.error("Lỗi khi tải giá vé từ ticket:", err);
     }
@@ -248,6 +255,8 @@ function TicketAdmin() {
           onCancel={() => {
             setIsModalOpen(false);
             setIsUpdateMode(false);
+            setPosterFile(null);
+            setPosterPreview(null);
           }}
           okText={isUpdateMode ? "Lưu thay đổi" : "Tạo vé"}
         >
@@ -256,14 +265,47 @@ function TicketAdmin() {
           <Upload
             beforeUpload={(file) => {
               setPosterFile(file);
+              setPosterPreview(URL.createObjectURL(file));
               return false; // ngăn upload tự động
             }}
             maxCount={1}
           >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
-          {posterFile && <p>Đã chọn: {posterFile.name}</p>}
+          {posterPreview && (
+            
+            <div style={{ marginTop: 12, textAlign: "center" }}>
+              <p style={{ color: "#888", marginTop: 4 }}>Xem trước poster mới</p>
+              <img
+                src={posterPreview}
+                alt="Xem trước poster mới"
+                style={{
+                  width: "100%",
+                  maxHeight: "250px",
+                  objectFit: "contain",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                }}
+              />
+            </div>
+          )}
         </div>
+        {matchPoster && !posterFile && (
+        <div style={{ marginTop: 12, textAlign: "center" }}>
+          <p style={{ color: "#888", marginTop: 4 }}>Poster hiện tại</p>
+          <img
+            src={matchPoster}
+            alt="Poster hiện tại"
+            style={{
+              width: "100%",
+              maxHeight: "250px",
+              objectFit: "contain",
+              borderRadius: "8px",
+              border: "1px solid #ddd",
+            }}
+          />
+        </div>
+        )}
 
         {sections.map((section) => (
           <div key={section.id} style={{ marginBottom: 12 }}>

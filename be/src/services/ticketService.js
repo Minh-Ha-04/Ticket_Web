@@ -127,16 +127,23 @@ export const deleteTicketForMatch = async(matchId)=>{
 export const getTicketSectionsByMatch = async (matchId) => {
   const tickets = await Ticket.findAll({
     where: { matchId },
-    include: {
-      model: Seat,
-      as : "seat",
-      include: {
-        model: Section,
-        as :"section",
-        attributes: ["id", "name", "seatCount"],
+    include: [
+      {
+        model: Seat,
+        as : "seat",
+        include: {
+          model: Section,
+          as :"section",
+          attributes: ["id", "name", "seatCount"],
+        },
       },
-    },
-  });
+        {
+          model : Match,
+          as : "match",
+          attributes :["poster"],
+        },
+    ]
+    });
 
   if (!tickets || tickets.length === 0) return [];
 
@@ -153,5 +160,10 @@ export const getTicketSectionsByMatch = async (matchId) => {
     }
   });
 
-  return Object.values(sectionMap);
+  const match_poster = tickets[0]?.match ?  tickets[0].match.poster : null;
+
+  return {
+    match: match_poster,
+    sections :Object.values(sectionMap)
+  };
 };

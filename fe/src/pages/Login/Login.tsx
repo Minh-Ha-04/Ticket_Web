@@ -1,80 +1,193 @@
 import styles from "./Login.module.scss";
 import classNames from "classnames/bind";
+import { Button, message, Spin } from "antd";
+import { useState, ChangeEvent, FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import instance from "../../utils/axiosInstance";
 
-import {Button} from "antd";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+const cx = classNames.bind(styles);
+
+interface FormData {
+  username: string;
+  email?: string;
+  password: string;
+  confirmPassword?: string;
+}
 
 function Login() {
-  const [isRegister, setIsRegister] =  useState(false);
+  const [isRegister, setIsRegister] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const navigate = useNavigate();
+
   const toggleForm = () => setIsRegister(!isRegister);
 
-  const cx = classNames.bind(styles);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.username || !formData.password) {
+      message.warning("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      if (isRegister) {
+        if (!formData.email) {
+          message.error("Vui lòng nhập email!");
+          setLoading(false);
+          return;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          message.error("Mật khẩu xác nhận không khớp!");
+          setLoading(false);
+          return;
+        }
+
+        await instance.post("/auth/register", {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        message.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        setIsRegister(false);
+      } else {
+        const res = await instance.post("/auth/login", {
+          username: formData.username,
+          password: formData.password,
+        });
+
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        message.success("Đăng nhập thành công!");
+        navigate("/admin");
+      }
+    } catch (err: any) {
+      message.error(err.response?.data?.message || "Có lỗi xảy ra!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // sự kiện đăng nhập google
+  const handleGoogleLogin = () => {
+    window.location.href = `${ process.env.REACT_APP_API_URL}/auth/google`;
+  };
+
   return (
-  <div className={cx("wrapper")}>
+    <div className={cx("wrapper")}>
+      <header className={cx("header")}>
+        <Link to="/">
+          <img src="/logo192.png" alt="Logo" className={cx("logo")} />
+        </Link>
+        <h1 className={cx("title")}>Welcome</h1>
+        <p className={cx("subtitle")}>
+          {isRegister
+            ? "Đăng ký tài khoản mới"
+            : "Đăng nhập vào hệ thống quản lý"}
+        </p>
+      </header>
 
-    <header className={cx("header")}>
-      <Link to="/"><img src="/logo192.png" alt="Logo" className={cx("logo")} /></Link>
-      <h1 className={cx("title")}>Welcome</h1>
-      <p className={cx("subtitle")}>
-        {isRegister  ? "Please register to create an account" : "Please log in to your account"}
-      </p>
-    </header>
-    
-    <div className={cx("content")}>
-      <form className={cx("form")}>
-        <div className={cx("form-group")}>
-          <label >Username</label>
-          <input type="text" id="username" name="username" required className={cx("username")} />
-        </div>
+      <div className={cx("content")}>
+        <Spin spinning={loading} tip="Đang xử lý...">
+          <form className={cx("form")} onSubmit={handleSubmit}>
+            <div className={cx("form-group")}>
+              <label>Tên đăng nhập</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Nhập tên đăng nhập"
+                required
+              />
+            </div>
 
-        {isRegister &&
-        (
-          <div className={cx("form-group")}>
-              <label>Email</label>
-              <input type="email" name="email" required className={cx("email")} />
-          </div>
-        )}
-
-        <div className={cx("form-group")}>
-          <label>Password</label>
-          <input type="password" id="password" name="password" required className={cx("password")} />
-        </div>
-
-        {isRegister &&
-        (
-          <div className={cx("form-group")}>
-              <label>Confirm Password</label>
-              <input type="password" name="confirmPassword" required className={cx("confirm-password")} />
-          </div>
-        )}
-
-          <Button type="primary" block>
-            {isRegister ? "Register" : "Log In"}
-          </Button>
-
-          <div className={cx("toggle-link")}>
-            {isRegister ? (
-              <span onClick={toggleForm}>Already have an account? Log In</span>
-            ) : (
-              <span onClick={toggleForm}>Don't have an account? Register</span>
+            {isRegister && (
+              <div className={cx("form-group")}>
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Nhập email của bạn"
+                  required
+                />
+              </div>
             )}
-          </div>
-      </form>
 
-    <div className={cx("login-google")}>
-      <Button type="default">  
-      <img src="/logo-gg.png" alt="Google Logo" className={cx("google-logo")} />
-        Login with Google
-      </Button>
+            <div className={cx("form-group")}>
+              <label>Mật khẩu</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Nhập mật khẩu"
+                required
+              />
+            </div>
+
+            {isRegister && (
+              <div className={cx("form-group")}>
+                <label>Xác nhận mật khẩu</label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Nhập lại mật khẩu"
+                  required
+                />
+              </div>
+            )}
+
+            <Button type="primary" htmlType="submit" block size="large">
+              {isRegister ? "Đăng ký" : "Đăng nhập"}
+            </Button>
+
+            <div className={cx("toggle-link")}>
+              {isRegister ? (
+                <span onClick={toggleForm}>
+                  Đã có tài khoản? Đăng nhập
+                </span>
+              ) : (
+                <span onClick={toggleForm}>
+                  Chưa có tài khoản? Đăng ký ngay
+                </span>
+              )}
+            </div>
+          </form>
+        </Spin>
+
+        <div className={cx("login-google")}>
+          <Button type="default" onClick={handleGoogleLogin} block size="large">
+            <img
+              src="/logo-gg.png"
+              alt="Google Logo"
+              className={cx("google-logo")}
+            />
+            Đăng nhập bằng Google
+          </Button>
+        </div>
+      </div>
     </div>
-
-
-
-    </div>
-
-  </div>);
-
+  );
 }
-  
+
 export default Login;
