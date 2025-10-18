@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, replace } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import instance from "../utils/axiosInstance";
 import { message } from "antd";
@@ -7,6 +7,15 @@ import { message } from "antd";
 function LoginSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
+  interface UserToken {
+    id: number;
+    role: string;
+    username: string;
+    email: string;
+    avatar: string;
+    iat: number;
+    exp: number;
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -34,11 +43,19 @@ function LoginSuccess() {
       handleVerifyEmail();
     } else {
       try {
-        const user = jwtDecode(token);
+        const user = jwtDecode<UserToken>(token);
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
         message.success("Đăng nhập thành công!");
-        navigate("/", { replace: true });
+        const role = user.role;
+        if(role === "admin")
+        {
+          navigate("/admin",{ replace : true });
+        }
+        else{
+          navigate("/", { replace: true });
+        }
+
       } catch (err) {
         message.error("Token không hợp lệ!");
         navigate("/login-failed");
