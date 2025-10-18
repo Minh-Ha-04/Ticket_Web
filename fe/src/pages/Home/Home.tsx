@@ -11,11 +11,13 @@ function Home() {
 
 useEffect(() => {
   const userData = localStorage.getItem("user");
+  console.log(userData);
   if (userData) setUser(JSON.parse(userData));
 }, []);
 
   return (
     <div>
+      
       {user ? (
         <h2>Xin chào, {user.username || user.email}</h2>
       ) : (

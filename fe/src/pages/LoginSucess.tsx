@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import instance from "../utils/axiosInstance";
+import { message } from "antd";
 
 function LoginSuccess() {
   const navigate = useNavigate();
@@ -9,28 +11,42 @@ function LoginSuccess() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
+    const mode = params.get("mode"); // thêm mode để phân biệt login hay verify
 
     if (!token) {
-      console.error("Token not found in URL");
+      message.error("Token không hợp lệ!");
       navigate("/login-failed");
       return;
     }
 
-    try {
-      const user = jwtDecode(token);
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-    } catch (err) {
-      console.error(err);
-      navigate("/login-failed");
-      return;
-    }
+    const handleVerifyEmail = async () => {
+      try {
+        const res = await instance.get(`/auth/verify-email?token=${token}`);
+        message.success("Email đã được xác thực, bạn có thể đăng nhập!");
+        navigate("/login");
+      } catch (err: any) {
+        message.error(err.response?.data?.message || "Liên kết không hợp lệ!");
+        navigate("/login-failed");
+      }
+    };
 
-    // Xóa query param và về Home
-    navigate("/", { replace: true });
+    if (mode === "verify") {
+      handleVerifyEmail();
+    } else {
+      try {
+        const user = jwtDecode(token);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        message.success("Đăng nhập thành công!");
+        navigate("/", { replace: true });
+      } catch (err) {
+        message.error("Token không hợp lệ!");
+        navigate("/login-failed");
+      }
+    }
   }, [navigate, location]);
 
-  return <p>Đang xử lý đăng nhập...</p>;
+  return <p>Đang xử lý...</p>;
 }
 
 export default LoginSuccess;

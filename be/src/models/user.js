@@ -10,6 +10,7 @@ const User = sequelize.define("User", {
     role : { type: DataTypes.ENUM('user','admin'),allowNull: false, defaultValue: 'user' },
     phone : { type: DataTypes.STRING, allowNull: true },
     isActive : { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    verificationToken: { type: DataTypes.STRING, allowNull: true },
     avatar : { type: DataTypes.STRING, allowNull: true },
 }, {
     timestamps: true,

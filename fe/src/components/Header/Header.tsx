@@ -11,15 +11,22 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token); // true nếu token tồn tại
+    const handleStorageChange = () => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    };
+  
+    window.addEventListener("storage", handleStorageChange);
+    handleStorageChange();
+  
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    navigate("/"); // về Home sau khi logout
+    navigate("/login"); // về Home sau khi logout
   };
 
   return (

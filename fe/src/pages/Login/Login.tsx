@@ -62,7 +62,7 @@ function Login() {
           password: formData.password,
         });
 
-        message.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        alert("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
         setIsRegister(false);
       } else {
         const res = await instance.post("/auth/login", {
@@ -73,9 +73,15 @@ function Login() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        message.success("Đăng nhập thành công!");
-        navigate("/admin");
-      }
+        alert("Đăng nhập thành công!");
+        const role = res.data.user.role;
+
+        if (role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+            }
     } catch (err: any) {
       message.error(err.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
@@ -98,7 +104,7 @@ function Login() {
         <p className={cx("subtitle")}>
           {isRegister
             ? "Đăng ký tài khoản mới"
-            : "Đăng nhập vào hệ thống quản lý"}
+            : "Đăng nhập "}
         </p>
       </header>
 

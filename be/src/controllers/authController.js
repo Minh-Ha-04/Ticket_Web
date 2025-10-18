@@ -1,90 +1,59 @@
-import bcrypt from "bcrypt";
-import User from "../models/user.js";
+
 import { generateToken } from "../utils/jwt.js";
-import nodemailer from "nodemailer";
 
-// Hàm gửi mail xác nhận
-const sendVerificationEmail = async (email, token) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+import * as authService from "../services/authService.js";
+import models from "../models/index.js";
 
-  const url = `${process.env.CLIENT_URL}/verify/${token}`;
+const {User} = models;
+export const register = async(req,res)=>{
+  try {
+    const {username,email,password} = req.body;
 
-  await transporter.sendMail({
-    from: `"Football Ticket" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: "Xác nhận tài khoản",
-    html: `
-            <p>Chào bạn,</p>
-            <p>Nhấn vào link dưới đây để xác nhận tài khoản:</p>
-            <a href="${url}">${url}</a>
-        `,
-  });
+    if(!username||!email||!password){
+      return res.status(400).json({message :"Please enter complete information!!"});
+    }
+    const newUser = await authService.register(username,email,password);
+    const {password:_, ...userData} = newUser.dataValues;
+    return res.status(201).json({
+      message:"Register sucessfully",
+      user :userData,
+    })
+  }
+  catch (error) {
+    return res.status(400).json({
+      message : error.message
+    });
+  }
 };
-
-
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { token } = req.params;
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: "Thiếu token xác minh." });
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findByPk(decoded.id);
-    if (!user) {
-      return res.status(404).json({ message: "Không tìm thấy user" });
-    }
+    const user = await User.findOne({ where: { verificationToken: token } });
+    if (!user) return res.status(400).json({ message: "Token không hợp lệ." });
 
     user.isActive = true;
     await user.save();
 
-    res.json({ message: "Xác thực email thành công, bạn có thể đăng nhập" });
+    return res.status(200).json({ message: "Xác minh email thành công! Bạn có thể đăng nhập." });
   } catch (error) {
-    res.status(400).json({ message: "Token không hợp lệ hoặc đã hết hạn" });
+    return res.status(500).json({ message: "Lỗi xác minh email", error: error.message });
   }
 };
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(404).json({ message: "Không tìm thấy user" });
-    }
-
-    if (!user.isActive) {
-      return res
-        .status(403)
-        .json({ message: "Vui lòng xác thực email trước khi đăng nhập" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu không đúng" });
-    }
-
-    const token = generateToken({ id: user.id, role: user.role });
-
-    res.json({
-      message: "Đăng nhập thành công",
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Lỗi server", error: error.message });
+export const login = async(req,res) => {
+  try{
+    const {username, password } = req.body;
+    const data = await authService.login(username,password);
+    res.status(200).json(data);
   }
-};
+  catch(error)
+  {
+    res.status(400).json({message : error.message});
+  }
+}
 
 export const logout = async (req, res) => {
   try {
@@ -98,7 +67,6 @@ export const googleCallback = async (req, res) => {
   try {
     const user = req.user;
     const token = generateToken(user);
-    console.log("Token in googlecallback",token);
     res.redirect(`${process.env.CLIENT_URL}/login-success?token=${token}`);
   } catch (error) {
     console.error(error);
