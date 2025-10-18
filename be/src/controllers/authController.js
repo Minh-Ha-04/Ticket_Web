@@ -55,14 +55,6 @@ export const login = async(req,res) => {
   }
 }
 
-export const logout = async (req, res) => {
-  try {
-    res.json({ message: "Đăng xuất thành công" });
-  } catch (error) {
-    res.status(500).json({ message: "Lỗi server", error: error.message });
-  }
-};
-
 export const googleCallback = async (req, res) => {
   try {
     const user = req.user;

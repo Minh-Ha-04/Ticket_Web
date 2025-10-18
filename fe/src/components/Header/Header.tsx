@@ -26,7 +26,7 @@ function Header() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setIsLoggedIn(false);
-    navigate("/login"); // về Home sau khi logout
+    navigate("/login"); 
   };
 
   return (

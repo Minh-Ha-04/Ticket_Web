@@ -1,41 +1,53 @@
 
-import { Menu } from 'antd';
-import { TeamOutlined, UserOutlined, CalendarOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { Menu } from "antd";
+import {
+  TeamOutlined,
+  UserOutlined,
+  CalendarOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   const menuItems = [
     {
-      key: 'team',
+      key: "team",
       icon: <TeamOutlined />,
-      label: 'Quản lý đội bóng',
-      onClick: () => navigate('/admin/teams'),
+      label: "Quản lý đội bóng",
+      onClick: () => navigate("/admin/teams"),
     },
     {
-      key: 'matches',
+      key: "matches",
       icon: <UserOutlined />,
-      label: 'Quản lý trận đấu',
-      onClick: () => navigate('/admin/matches'),
+      label: "Quản lý trận đấu",
+      onClick: () => navigate("/admin/matches"),
     },
     {
-      key: 'tickets',
+      key: "tickets",
       icon: <CalendarOutlined />,
-      label: 'Quản lý vé',
-      onClick: () => navigate('/admin/tickets'),
+      label: "Quản lý vé",
+      onClick: () => navigate("/admin/tickets"),
     },
     {
-      key: 'stadiums',
+      key: "stadiums",
       icon: <CalendarOutlined />,
-      label: 'Quản lý sân vận động',
-      onClick: () => navigate('/admin/stadiums'),
+      label: "Quản lý sân vận động",
+      onClick: () => navigate("/admin/stadiums"),
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'Đăng xuất',
-      onClick: () => navigate('/logout'),
+      label: "Đăng xuất",
+      onClick: handleLogout, // 
     },
   ];
 
@@ -45,7 +57,7 @@ const Navbar = () => {
         mode="horizontal"
         items={menuItems}
         className="flex justify-center"
-        style={{ borderBottom: 'none', padding: '0 20px' }}
+        style={{ borderBottom: "none", padding: "0 20px" }}
       />
     </div>
   );

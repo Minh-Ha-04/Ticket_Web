@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation, replace } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import instance from "../utils/axiosInstance";
 import { message } from "antd";
@@ -30,7 +30,7 @@ function LoginSuccess() {
 
     const handleVerifyEmail = async () => {
       try {
-        const res = await instance.get(`/auth/verify-email?token=${token}`);
+        await instance.get(`/auth/verify-email?token=${token}`);
         message.success("Email đã được xác thực, bạn có thể đăng nhập!");
         navigate("/login");
       } catch (err: any) {
