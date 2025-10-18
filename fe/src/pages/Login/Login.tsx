@@ -75,7 +75,7 @@ function Login() {
 
         alert("Đăng nhập thành công!");
         const role = res.data.user.role;
-
+        console.log(res.data.user.role);
         if (role === "admin") {
           navigate("/admin");
         } else {
