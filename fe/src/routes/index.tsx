@@ -7,6 +7,7 @@
     import Home from "../pages/Home";
     import Ticket from "../pages/Tickets";
     import Login from "../pages/Login/Login";
+    import TicketBooking from "../pages/TicketBooking";
 
     import LoginSuccess from "../pages/LoginSucess";
     import PageError from "../pages/PageError";
@@ -26,6 +27,7 @@
             children: [
                 {path: "/", element: <Home />},
                 {path: "/ticket", element: <Ticket />},
+                {path: "/ticket/:matchId",element : <TicketBooking/>}
             ]
 
         },

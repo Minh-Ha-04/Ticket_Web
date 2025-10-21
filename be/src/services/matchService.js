@@ -1,5 +1,5 @@
 import models from "../models/index.js";
-const {Match,Team,Stadium} = models;
+const {Match,Team,Stadium,Ticket} = models;
 
 export const getAllMatches = async()=>{
     const matches = await Match.findAll({
@@ -21,12 +21,27 @@ export const getMatchAtHome = async () => {
         include: [
           { model: Team, as: "homeTeam", attributes: ["id", "name",'logo'] },
           { model: Team, as: "awayTeam", attributes: ["id", "name",'logo'] },
-          { model: Stadium, attributes: ["id", "name"] },
+          { model: Stadium, attributes: ["id", "name"] },     
         ],
         order: [["matchDate", "ASC"]],
       });
-      return matches;
-}
+
+      const result = await Promise.all(
+        matches.map(async (match)=>{
+            const minPriceTicket = await Ticket.findOne({
+              where : {matchId: match.id},
+              order : [["price","ASC"]],
+              attributes : ["price"],
+            });
+
+            return {
+              ...match.toJSON(),
+              minPrice : minPriceTicket.price,
+            };
+        })
+      );
+      return result;
+};
 
 export const getMatchbyId = async(matchId)=>{
     const match = await Match.findByPk(matchId);

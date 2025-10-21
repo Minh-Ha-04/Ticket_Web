@@ -29,6 +29,7 @@ interface Match {
   awayTeam: Team;
 }
 
+
 interface Team {
   id: number;
   name: string;
