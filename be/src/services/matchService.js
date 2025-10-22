@@ -36,14 +36,14 @@ export const getMatchAtHome = async () => {
 
             return {
               ...match.toJSON(),
-              minPrice : minPriceTicket.price,
+              minPrice: minPriceTicket ? minPriceTicket.price : null,
             };
         })
       );
       return result;
 };
 
-export const getMatchbyId = async(matchId)=>{
+export const getMatchById = async(matchId)=>{
     const match = await Match.findByPk(matchId);
     if(!match) {
         throw new Error("Can't find match ")

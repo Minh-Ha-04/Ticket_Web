@@ -1,5 +1,5 @@
-import model from "../models/index.js";
-const { Seat, Section } = model;
+import models from "../models/index.js";
+const { Seat, Section } = models;
 
 export const getSeatsInSection = async (sectionId) => {
   return await Seat.findAll({
@@ -12,15 +12,4 @@ export const getSeatsInSection = async (sectionId) => {
       },
     ],
   });
-};
-
-export const createSeat = async (data) => {
-  return await Seat.create(data);
-};
-
-export const updateSeat = async (id, data) => {
-  const seat = await Seat.findByPk(id);
-  if (!seat) throw new Error("Can't find seat");
-  await seat.update(data);
-  return seat;
 };

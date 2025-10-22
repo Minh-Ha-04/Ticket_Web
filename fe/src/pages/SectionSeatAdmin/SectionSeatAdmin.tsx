@@ -54,11 +54,11 @@ function SectionSeatAdmin() {
     try {
       if (editingId) {
         await instance.put(`/sections/${editingId}`, values);
-        message.success("Cập nhật khu vực thành công!");
+        alert("Cập nhật khu vực thành công!");
       } else {
         await instance.post(`/sections`, { ...values, stadiumId: Number(stadiumId) });
         
-        message.success("Thêm khu vực mới thành công!");
+        alert("Thêm khu vực mới thành công!");
       }
       
       form.resetFields();
@@ -84,7 +84,7 @@ function SectionSeatAdmin() {
     if (!deleteId) return;
     try {
       await instance.delete(`/sections/${deleteId}`);
-      message.success("🗑️ Xóa khu vực thành công!");
+      alert("🗑️ Xóa khu vực thành công!");
       fetchSections();
     } catch (err) {
       console.error(err);

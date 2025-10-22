@@ -22,10 +22,10 @@ export const getMatchAtHome = async(req,res)=>{
     }
 }
 
-export const getMatchbyId = async(req,res)=>{
+export const getMatchById = async(req,res)=>{
     try{
         const {id}= req.params;
-        const match = await matchService.getMatchbyId(id);
+        const match = await matchService.getMatchById(id);
         res.json(match);
     }
     catch(err)

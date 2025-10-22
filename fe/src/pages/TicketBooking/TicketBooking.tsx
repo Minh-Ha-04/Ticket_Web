@@ -58,11 +58,9 @@ function TicketBooking() {
     const fetchMatchData = async () => {
       try {
         const { data } = await instance.get(`/matches/${matchId}`);
-        console.log(data);
         setMatch(data);
   
         const sectionsResponse = await instance.get(`/sections/stadium/${data.stadiumId}`);
-        console.log(sectionsResponse.data.sections);
         setSections(sectionsResponse.data.sections);
   
         setLoading(false);

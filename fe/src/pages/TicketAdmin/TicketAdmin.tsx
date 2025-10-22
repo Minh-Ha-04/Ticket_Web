@@ -64,6 +64,7 @@ function TicketAdmin() {
   const fetchMatches = async () => {
     try {
       const res = await instance.get("/matches/home");
+      console.log(res.data);
       setMatches(res.data);
     } catch (err) {
       message.error("Không tải được danh sách trận đấu!");

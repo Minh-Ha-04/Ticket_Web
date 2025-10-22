@@ -11,28 +11,3 @@ export const getSeatsInSection =  async(req,res)=>{
         res.status(500).json({message:err.message});
     }
 }
-
-export const createSeat = async(req,res)=>{
-    try{
-        const {number,sectionId,isAvailable} = req.body;
-        const seat = await seatService.createSeat({number,sectionId,isAvailable});
-        res.status(201).json(seat);
-    }
-    catch(err)
-    {
-        res.status(500).json({message:err.message});
-    }
-}
-
-export const updateSeat = async(req,res)=>{
-    try{
-        const {id} = req.params;
-        const {number,sectionId,isAvailable} = req.body;
-        const seat = await seatService.updateSeat(id,{number,sectionId,isAvailable});
-        res.json(seat)
-    }
-    catch(err)
-    {
-        res.status(500).json({message:err.message});
-    }
-}

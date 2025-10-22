@@ -12,7 +12,9 @@ const Seat = sequelize.define("Seat", {
 });
 
 Seat.associate = (models) => {
-    Seat.belongsTo(models.Section,{foreignKey : 'sectionId',as : 'section'});
+    Seat.belongsTo(models.Section,{foreignKey : 'sectionId',as : 'section',    onDelete: "CASCADE",
+        onUpdate: "CASCADE",});
+    
 };
 
 

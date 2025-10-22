@@ -18,7 +18,7 @@ interface TicketProps {
     homeTeam: Team;
     awayTeam: Team;
     isTicketCreated: boolean;
-    minPrice: number ;
+    minPrice: number;
   };
 }
 
@@ -34,15 +34,20 @@ function Ticket({ match }: TicketProps) {
     minute: "2-digit",
   });
 
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    return match.isTicketCreated ? (
+      <Link to={`/ticket/${match.id}`} className={cx("link")}>
+        {children}
+      </Link>
+    ) : (
+      <div className={cx("link-disabled")}>{children}</div>
+    );
+  };
+
   return (
-    <Link to={`/ticket/${match.id}`} className={cx("link")}>
-      <div className={cx("wrapper")}>
-        {/* Poster */}
-        <img
-          src={match.poster}
-          alt="Match Poster"
-          className={cx("poster")}
-        />
+    <Wrapper>
+      <div className={cx("wrapper", { disabled: !match.isTicketCreated })}>
+        <img src={match.poster} alt="Match Poster" className={cx("poster")} />
         <div className={cx("content")}>
           <div className={cx("teams")}>
             <div className={cx("team")}>
@@ -50,14 +55,12 @@ function Ticket({ match }: TicketProps) {
               <span>{match.homeTeam.name}</span>
             </div>
             <span className={cx("vs")}>VS</span>
-
             <div className={cx("team")}>
               <img src={match.awayTeam.logo} alt={match.awayTeam.name} />
               <span>{match.awayTeam.name}</span>
             </div>
           </div>
 
-          {/* Price */}
           <div className={cx("price")}>
             {match.minPrice ? (
               <>
@@ -67,14 +70,14 @@ function Ticket({ match }: TicketProps) {
                 </span>
               </>
             ) : (
-              <span className={cx("no-price")}>Đang cập nhật giá vé</span>
+              <span className={cx("no-price")}>Vé chưa mở bán</span>
             )}
           </div>
 
           <div className={cx("date")}>{formattedDate}</div>
         </div>
       </div>
-    </Link>
+    </Wrapper>
   );
 }
 
