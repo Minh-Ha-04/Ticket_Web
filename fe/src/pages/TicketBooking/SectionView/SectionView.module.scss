@@ -1,0 +1,75 @@
+.section-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  max-height: 100vh;
+}
+
+
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  margin: 1rem 0 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+
+  &::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #007bff;
+    margin: 0.6rem auto 0;
+    border-radius: 2px;
+  }
+}
+
+
+.seats-grid {
+  display: grid;
+  gap: 3px;
+  justify-content: center;
+  margin-top: 1rem;
+
+  /* Mỗi ghế rộng 25px, tự thêm cột khi có chỗ */
+  grid-template-columns: repeat(auto-fit, minmax(25px, 1fr));
+
+  /* Cố định chiều cao mỗi hàng */
+  grid-auto-rows: 25px;
+
+  /* Giới hạn kích thước tổng */
+  max-width: 95vw;
+  max-height: 60vh;
+  overflow: auto; /* Cho phép cuộn khi nhiều ghế */
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.seat {
+  width: 25px;
+  height: 25px;
+  background-color: #dcdcdc;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.sold {
+    background-color: #e74c3c;
+    cursor: not-allowed;
+  }
+
+  &.selected {
+    background-color: #27ae60;
+  }
+}

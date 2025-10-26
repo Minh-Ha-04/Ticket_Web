@@ -7,7 +7,7 @@
     import Home from "../pages/Home";
     import Ticket from "../pages/Tickets";
     import Login from "../pages/Login/Login";
-    import TicketBooking from "../pages/TicketBooking";
+    import TicketBooking from "../pages/TicketBooking/TicketBooking";
 
     import LoginSuccess from "../pages/LoginSucess";
     import PageError from "../pages/PageError";

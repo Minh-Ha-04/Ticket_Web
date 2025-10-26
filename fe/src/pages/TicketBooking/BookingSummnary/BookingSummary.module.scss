@@ -1,0 +1,68 @@
+.summary {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  
+    .title {
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+  
+    .section {
+      margin-bottom: 8px;
+  
+      .section-name {
+        margin-right: 8px;
+        color: #333;
+      }
+  
+      .seats {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 6px;
+  
+        .seat {
+          background: #f0f0f0;
+          padding: 4px 8px;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          font-size: 14px;
+  
+          .remove-btn {
+            margin-left: 4px;
+            border: none;
+            background: transparent;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  
+    .total {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+  
+    .confirm-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #0056b3;
+      }
+    }
+  }
+  
