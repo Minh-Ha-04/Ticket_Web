@@ -57,11 +57,14 @@ function TicketBooking() {
   useEffect(() => {
     const fetchMatchData = async () => {
       try {
-        const { data } = await instance.get(`/matches/${matchId}`);
-        setMatch(data);
-  
-        const sectionsResponse = await instance.get(`/sections/stadium/${data.stadiumId}`);
-        setSections(sectionsResponse.data.sections);
+        // Lấy thông tin trận đấu
+        const { data: matchData } = await instance.get(`/matches/${matchId}`);
+        setMatch(matchData);
+
+        const ticketRes = await instance.get(`/tickets/match/${matchId}`);
+        console.log("Ticket data:", ticketRes.data);
+
+        setSections(ticketRes.data.sections.sections);
   
         setLoading(false);
       } catch (error) {
@@ -69,9 +72,9 @@ function TicketBooking() {
         setLoading(false);
       }
     };
-  
     fetchMatchData();
   }, [matchId]);
+  ;
   
 
   // Fetch seats when section is selected

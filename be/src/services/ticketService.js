@@ -161,9 +161,11 @@ export const getTicketSectionsByMatch = async (matchId) => {
   });
 
   const match_poster = tickets[0]?.match ?  tickets[0].match.poster : null;
-
+  const sortedSections = Object.values(sectionMap).sort((a, b) =>
+    a.name.localeCompare(b.name, "vi", { numeric: true })
+  );
   return {
     match: match_poster,
-    sections :Object.values(sectionMap)
+    sections: sortedSections,
   };
 };
