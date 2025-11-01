@@ -56,11 +56,27 @@ export const deleteTickets = async (req,res)=>{
   }
 };
 
-export const getTicketPricesByMatch = async (req, res) => {
+export const getTicketsBySectionAndMatch = async (req, res) => {
+  try {
+    const { sectionId, matchId } = req.params;
+    const tickets = await ticketService.getTicketsBySectionAndMatch(sectionId, matchId);
+
+    if (!tickets || tickets.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy vé cho khu này." });
+    }
+
+    res.json({ tickets });
+  } catch (error) {
+    console.error("Lỗi khi lấy vé theo khu và trận:", error);
+    res.status(500).json({ message: "Lỗi server khi lấy vé." });
+  }
+};
+
+export const getTicketPriceByMatch = async (req, res) => {
   try {
     const { matchId } = req.params;
 
-    const sections = await ticketService.getTicketSectionsByMatch(matchId);
+    const sections = await ticketService.getTicketPriceByMatch(matchId);
     if (!sections || sections.length === 0)
       return res.status(404).json({ message: "Không tìm thấy vé cho trận đấu này" });
     res.status(200).json({ sections });

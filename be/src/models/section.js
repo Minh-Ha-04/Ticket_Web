@@ -23,6 +23,12 @@ Section.associate = (models) => {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  Section.hasMany(models.Ticket, {
+    foreignKey: "TicketId",
+    as: "tickets",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
 };
 
 export default Section;

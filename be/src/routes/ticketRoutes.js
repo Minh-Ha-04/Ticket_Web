@@ -8,7 +8,9 @@ router.post('/generate/:matchId',upload.single("poster"), ticketController.gener
 router.put('/:matchId',upload.single("poster"),ticketController.updateTicket);
 router.delete('/:matchId',ticketController.deleteTickets);
 
+router.get("/section/:sectionId/match/:matchId", ticketController.getTicketsBySectionAndMatch);
 
-router.get("/match/:matchId", ticketController.getTicketPricesByMatch);
+
+router.get("/match/:matchId", ticketController.getTicketPriceByMatch);
 
 export  default router;

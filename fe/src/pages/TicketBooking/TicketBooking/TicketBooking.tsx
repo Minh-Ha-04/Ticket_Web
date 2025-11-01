@@ -9,77 +9,62 @@ import BookingSummary from '../BookingSummnary';
 
 const cx = classNames.bind(styles);
 
-interface Team {
-  id: number;
-  name: string;
-  logo: string;
-}
-
-interface Stadium {
-  id: number;
-  name: string;
-}
-
-interface Match {
-  id: number;
-  poster: string;
-  homeTeamId: number;
-  awayTeamId: number;
-  matchDate: string;
-  homeTeam: Team;
-  awayTeam: Team;
-  stadium: Stadium;
-  stadiumId: number;
-}
-
-interface Section {
-  id: number;
-  name: string;
-  seatCount: number;
-  price: number;
-  stadiumId: number;
-}
-
-interface Seat {
-  id: number;
-  number: string;
-  isAvailable: boolean;
-  sectionId: number;
-}
-
 function TicketBooking() {
   const { matchId } = useParams<{ matchId: string }>();
-  const [match, setMatch] = useState<Match | null>(null);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [activeSection, setActiveSection] = useState<Section | null>(null); // chỉ dùng để xem
-  const [selectedTickets, setSelectedTickets] = useState<{ section: Section; seat: Seat }[]>([]);
-
+  const [match, setMatch] = useState<any>(null);
+  const [sections, setSections] = useState<any[]>([]);
+  const [activeSection, setActiveSection] = useState<any | null>(null);
+  const [selectedTickets, setSelectedTickets] = useState<any[]>([]);
+  const [sectionTickets, setSectionTickets] = useState<any[]>([]);
+  const [loadingSeats, setLoadingSeats] = useState(false);
+  const stadium_ID = process.env.REACT_APP_HOME_STADIUM_ID;
 
   useEffect(() => {
     const fetchMatchData = async () => {
       const { data: matchData } = await instance.get(`/matches/${matchId}`);
-      const ticketRes = await instance.get(`/tickets/match/${matchId}`);
+      const { data: sectionsData } = await instance.get(`/sections/stadium/${stadium_ID}`);
       setMatch(matchData);
-      setSections(ticketRes.data.sections.sections);
+      setSections(sectionsData.sections); 
     };
     fetchMatchData();
   }, [matchId]);
 
 
+  const handleSelectSection = async (section: any) => { 
+    setLoadingSeats(true);
+    try {
+      const { data : ticketData } = await instance.get(`/tickets/section/${section.id}/match/${matchId}`);
+      const { data: seatData } = await instance.get(`/seats/section/${section.id}`);  
+      const seatsArray = Array.isArray(seatData) ? seatData : seatData.seats || [];
+      // console.log("seatData:", seatsArray);
+      setActiveSection({ ...section, seats: seatsArray });
+      setSectionTickets(ticketData.tickets);
+    } catch (err) {
+      console.error("Lỗi tải vé:", err);
+    } finally {
+      setLoadingSeats(false);
+    }
+  };
 
   const handleBackToOverview = () => {
     setActiveSection(null);
   };
-  const handleSeatSelect = (seats: Seat[]) => {
+
+  const handleTicketSelect = (ticket: any) => {
     if (!activeSection) return;
-    // Xóa vé cũ của section này rồi thêm vé mới
-    setSelectedTickets((prev) => [
-      ...prev.filter((t) => t.section.id !== activeSection.id),
-      ...seats.map((seat) => ({ section: activeSection, seat })),
-    ]);
+  
+    setSelectedTickets((prev) => {
+      const isSelected = prev.some((t) => t.ticket.id === ticket.id);
+      
+      if (isSelected) {
+        // Nếu đã chọn → bỏ chọn
+        return prev.filter((t) => t.ticket.id !== ticket.id);
+      } else {
+        // Nếu chưa chọn → thêm vào
+        return [...prev, { section: activeSection, ticket }];
+      }
+    });
   };
-
-
 
   return (
     <div className={cx('container')}>
@@ -87,33 +72,32 @@ function TicketBooking() {
         <StadiumView
           match={match}
           sections={sections}
-          onSelectSection={setActiveSection}
+          onSelectSection={handleSelectSection}
         />
       ) : (
         <SectionView
           match={match}
           section={activeSection}
           onBack={handleBackToOverview}
-          onSeatSelect={handleSeatSelect}
-          selectedSeats={selectedTickets
-            .filter((t) => t.section.id === activeSection?.id)
-            .map((t) => t.seat)}
+          onTicketSelect={handleTicketSelect}
+          selectedTickets={selectedTickets
+            .filter((t) => t.section.id === activeSection?.id)}
+          tickets = {sectionTickets}
+          
         />
+
       )}
 
       <BookingSummary
-        selectedTickets={selectedTickets}
+        selectedTickets ={selectedTickets}        
         onRemoveTicket={(ticketToRemove) => {
           setSelectedTickets((prev) =>
             prev.filter(
-              (t) =>
-                !(t.section.id === ticketToRemove.section.id && t.seat.id === ticketToRemove.seat.id)
+              (t) => t.ticket.id !== ticketToRemove.id 
             )
           );
         }}
       />
-
-
     </div>
   );
 }

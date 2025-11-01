@@ -2,17 +2,15 @@ import dotenv from "dotenv";
 import models from "../models/index.js";
 import sequelize from "../config/db.js"
 import cloudinary from "../utils/cloudinary.js";
-const { Match,  Ticket, Seat, Stadium,Section  } = models;
+const { Match,  Ticket, Seat,Section  } = models;
 
 dotenv.config();
 
-const HOME_STADIUM_ID = process.env.HOME_STADIUM_ID ;
 
 export const generateTicketsForHomeTeam = async (matchId,file,sections) => {
   return sequelize.transaction(async (transaction) => {
     const match = await Match.findByPk(matchId);
     if (!match) throw new Error("Không tìm thấy trận đấu");
-    const stadium = await Stadium.findByPk(HOME_STADIUM_ID);
     let totalTickets = 0;
     console.log("File nhận được ở service:", file?.path);
     await Promise.all(
@@ -20,6 +18,7 @@ export const generateTicketsForHomeTeam = async (matchId,file,sections) => {
         const seats = await Seat.findAll({ where: { sectionId: section.sectionId } });
         const tickets = seats.map((seat) => ({
           matchId,
+          sectionId : section.sectionId,
           seatId: seat.id,
           price: section.price,
           status: "available",
@@ -124,7 +123,22 @@ export const deleteTicketForMatch = async(matchId)=>{
   })
 }
 
-export const getTicketSectionsByMatch = async (matchId) => {
+export const getTicketsBySectionAndMatch = async (sectionId, matchId) => {
+  const tickets = await Ticket.findAll({
+    where: { sectionId, matchId },
+    include: [
+      {
+        model: Seat,
+        as: "seat",
+        attributes: ["id", "number", "isAvailable"],
+      },
+    ],
+    attributes: ["id", "price", "status"],
+  });
+  return tickets;
+};
+
+export const getTicketPriceByMatch = async (matchId) => {
   const tickets = await Ticket.findAll({
     where: { matchId },
     include: [
@@ -164,8 +178,10 @@ export const getTicketSectionsByMatch = async (matchId) => {
   const sortedSections = Object.values(sectionMap).sort((a, b) =>
     a.name.localeCompare(b.name, "vi", { numeric: true })
   );
+
+
   return {
-    match: match_poster,
+    match_poster: match_poster,
     sections: sortedSections,
   };
 };

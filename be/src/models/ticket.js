@@ -4,11 +4,13 @@ import { DataTypes } from "sequelize";
 const Ticket = sequelize.define("Ticket", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     price: { type: DataTypes.FLOAT, allowNull: false },
-    status: { type: DataTypes.ENUM('available', 'sold','canceled'), allowNull: false, defaultValue: 'available' },
+    status: { type: DataTypes.ENUM('available', 'sold','canceled','held'), allowNull: false, defaultValue: 'available' },
     matchId : { type: DataTypes.INTEGER, allowNull: false},
+    sectionId : { type: DataTypes.INTEGER, allowNull: false},
     seatId : { type: DataTypes.INTEGER, allowNull: false},
     bookingId : { type: DataTypes.INTEGER, allowNull: true},
     cartId : { type: DataTypes.INTEGER, allowNull: true},
+    holdExpiresAt: { type: DataTypes.DATE, allowNull: true },
 }, {
     timestamps: true,
     indexes: [
@@ -19,6 +21,7 @@ const Ticket = sequelize.define("Ticket", {
 
 Ticket.associate = (models) => {
     Ticket.belongsTo(models.Match, {foreignKey :'matchId',as:'match'});
+    Ticket.belongsTo(models.Section, {foreignKey :'matchId',as:'section'});
     Ticket.belongsTo(models.Seat, {foreignKey :'seatId',as:'seat'});
     Ticket.belongsTo(models.Booking, {foreignKey :'bookingId',as:'booking'});
     Ticket.belongsTo(models.Cart, {foreignKey :'cartId',as:'cart'});

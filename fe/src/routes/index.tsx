@@ -8,6 +8,7 @@
     import Ticket from "../pages/Tickets";
     import Login from "../pages/Login/Login";
     import TicketBooking from "../pages/TicketBooking/TicketBooking";
+    import Payment from "../pages/Payment";
 
     import LoginSuccess from "../pages/LoginSucess";
     import PageError from "../pages/PageError";
@@ -19,6 +20,7 @@
     import StadiumAdmin from "../pages/StadiumAdmin";
     import SectionSeatAdmin from "../pages/SectionSeatAdmin";
 
+
     import ProtectedRoute from "./ProtectedRoute";
 
     const routes : RouteObject[] = [
@@ -27,7 +29,8 @@
             children: [
                 {path: "/", element: <Home />},
                 {path: "/ticket", element: <Ticket />},
-                {path: "/ticket/:matchId",element : <TicketBooking/>}
+                {path: "/ticket/:matchId",element : <TicketBooking/>},
+                {path: "/payment/:bookingId" , element :<Payment/>}
             ]
 
         },

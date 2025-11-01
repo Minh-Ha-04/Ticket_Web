@@ -1,5 +1,9 @@
 import styles from "./BookingSummary.module.scss";
 import classNames from 'classnames/bind';
+import { useNavigate } from "react-router-dom";
+import instance from "../../../utils/axiosInstance";
+import { useEffect, useState } from "react";
+
 const cx = classNames.bind(styles);
 
 interface Section {
@@ -11,46 +15,86 @@ interface Section {
 interface Seat {
   id: number;
   number: string;
+  ticketId:number;
 }
 
 interface Ticket {
+  id:number;
+  price :number;
   section: Section;
   seat: Seat;
 }
 
-interface BookingSummaryProps {
-  selectedTickets: Ticket[];
-  onRemoveTicket: (ticket: Ticket) => void; // callback để bỏ vé
+interface SelectedTicket {
+  ticket: Ticket;
 }
 
-function BookingSummary({ selectedTickets, onRemoveTicket }: BookingSummaryProps) {
-  if (!selectedTickets.length) return null;
+interface BookingSummaryProps {
+  selectedTickets: { ticket:Ticket; ticketId: number }[];
+  onRemoveTicket: (ticket: Ticket  ) => void;
+}
 
-  const total = selectedTickets.reduce(
-    (sum, t) => sum + t.section.price,
-    0
-  );
+function BookingSummary({ selectedTickets , onRemoveTicket }: BookingSummaryProps) {
 
-  // Gom ghế theo khu
-  const grouped = selectedTickets.reduce((acc, t) => {
-    acc[t.section.name] = acc[t.section.name] || [];
-    acc[t.section.name].push(t);
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState<number | null>(null);
+
+  // 🔐 Giả sử userId được lưu trong localStorage khi đăng nhập
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUserId(parsed.id);
+    }
+  }, []);
+
+  if (!selectedTickets .length) return null;
+  console.log(selectedTickets);
+  const total = selectedTickets.reduce((sum, s) => sum + s.ticket.price, 0);
+
+  // 🔹 Gom ghế theo khu vực
+  const grouped = selectedTickets.reduce((acc, s) => {
+    acc[s.ticket.seat.number] = acc[s.ticket.seat.number] || [];
+    acc[s.ticket.seat.number].push(s);
     return acc;
-  }, {} as Record<string, Ticket[]>);
+  }, {} as Record<string, SelectedTicket[]>);
+
+  const handleConfirm = async () => {
+    if (!userId) {
+      alert("Vui lòng đăng nhập để đặt vé!");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      console.log(selectedTickets);
+      const ticketIds = selectedTickets.map(t => t.ticket.id);
+
+      console.log("Gửi request booking:", { userId, ticketIds });
+      const res = await instance.post("/bookings", { userId, ticketIds });
+      console.log(res.data.booking.newBooking.id);
+      const bookingId = res.data.booking.newBooking.id;
+      navigate(`/payment/${bookingId}`);
+    } catch (err: any) {
+      console.error("Lỗi khi tạo booking:", err);
+      alert(err.response?.data?.message || "Đặt vé thất bại, vui lòng thử lại.");
+    }
+  };
 
   return (
     <div className={cx('summary')}>
       <h3 className={cx('title')}>Tóm tắt đặt vé</h3>
+
       {Object.entries(grouped).map(([section, tickets]) => (
         <div key={section} className={cx('section')}>
           <strong className={cx('section-name')}>{section}</strong>:
           <div className={cx('seats')}>
             {tickets.map(t => (
-              <span key={t.seat.id} className={cx('seat')}>
-                {t.seat.number}
-                <button 
-                  className={cx('remove-btn')} 
-                  onClick={() => onRemoveTicket(t)}
+              <span key={t.ticket.id} className={cx('seat')}>
+                {t.ticket.seat.number}
+                <button
+                  className={cx('remove-btn')}
+                  onClick={() => onRemoveTicket(t.ticket)}
                 >
                   ×
                 </button>
@@ -59,8 +103,15 @@ function BookingSummary({ selectedTickets, onRemoveTicket }: BookingSummaryProps
           </div>
         </div>
       ))}
-      <p className={cx('total')}>Tổng tiền: {total.toLocaleString()}đ</p>
-      <button className={cx('confirm-btn')}>Xác nhận đặt vé</button>
+
+      <p className={cx('total')}>Tổng tiền: {total.toLocaleString("vi-VN")}đ</p>
+
+      <button
+        className={cx('confirm-btn')}
+        onClick={handleConfirm}
+      >
+        Xác nhận đặt vé
+      </button>
     </div>
   );
 }

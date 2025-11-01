@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import styles from './SectionView.module.scss';
 import classNames from 'classnames/bind';
-import instance from '../../../utils/axiosInstance';
+
 import { Button } from 'antd';
 const cx = classNames.bind(styles);
 
@@ -18,6 +18,7 @@ interface Section {
   seatCount: number;
   price: number;
   stadiumId: number;
+  seats: Seat[];
 }
 
 interface Match {
@@ -25,54 +26,60 @@ interface Match {
   poster: string;
 }
 
+interface Ticket {
+  id: number;
+  price: number;
+  status: string;
+  matchId: number;
+  seat : Seat;
+  sectionId: number;
+}
+
 interface SectionViewProps {
   match: Match | null;
   section: Section;
   onBack: () => void;
-  onSeatSelect: (seats: Seat[]) => void;
-  selectedSeats: Seat[];
+  onTicketSelect: (ticket: Ticket) => void;
+  selectedTickets: { section: Section; ticket: Ticket }[];
+  tickets: Ticket[];
 }
 
-function SectionView({ match, section, onBack, onSeatSelect, selectedSeats }: SectionViewProps) {
-  const [seats, setSeats] = useState<Seat[]>([]);
-
+function SectionView({ section, onBack, onTicketSelect, selectedTickets, tickets }: SectionViewProps) {
   useEffect(() => {
-    instance.get(`/seats/section/${section.id}`).then(({ data }) => setSeats(data));
-  }, [section.id]);
+    console.log("Tickets:", tickets);
+  }, [tickets]);
+  useEffect(() => {
+    console.log("selectedTickets:", selectedTickets);
+  }, [selectedTickets]);
 
-  const toggleSeat = (seat: Seat) => {
-    if (!seat.isAvailable) return;
-    const isSelected = selectedSeats.some((s) => s.id === seat.id);
-    if (isSelected) {
-      onSeatSelect(selectedSeats.filter((s) => s.id !== seat.id));
-    } else {
-      onSeatSelect([...selectedSeats, seat]);
-    }
+  const toggleTicket = (ticket: Ticket) => {
+    if (ticket.status !== "available") return;
+    onTicketSelect(ticket);
   };
 
-  // Luôn có 50 hàng, số cột = ceil(seats.length / 50)
-  const columns = Math.ceil(seats.length / 50);
+  const columns = Math.ceil(tickets.length / 50);
 
   return (
-    <div className={cx('section-detail')}>
-      <Button type='primary' className={cx('back-btn')} onClick={onBack}>
+    <div className={cx("section-detail")}>
+      <Button type="primary" className={cx("back-btn")} onClick={onBack}>
         Quay lại sơ đồ sân
       </Button>
 
-      <h2 className={cx('title')}>{section.name}</h2>
+      <h2 className={cx("title")}>{section.name}</h2>
 
-      <div className={cx('seats-grid')} style={{
-        gridTemplateColumns: `repeat(${columns}, 1fr)`
-      }}>
-        {seats.map((seat) => {
-          const isSelected = selectedSeats.some((s) => s.id === seat.id);
+      <div
+        className={cx("seats-grid")}
+        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+      >
+        {tickets.map((ticket) => {
+          const isSelected = selectedTickets.some((s) => s.ticket.id === ticket.id);
           return (
             <div
-              key={seat.id}
-              onClick={() => toggleSeat(seat)}
-              className={cx('seat', {
+              key={ticket.id}
+              onClick={() => toggleTicket(ticket)}
+              className={cx("seat", {
                 selected: isSelected,
-                sold: !seat.isAvailable,
+                sold: ticket.status !== "available",
               })}
             />
           );

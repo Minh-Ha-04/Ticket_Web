@@ -6,7 +6,7 @@ import teamRoutes from './teamRoutes.js';
 import sectionRoutes from './sectionRoutes.js';
 import seatRoutes from './seatRoutes.js';
 import matchRoutes from './matchRoutes.js';
-
+import bookingRoutes from './bookingRoutes.js';
 const router = express.Router();
 
 router.use('/auth', authRoutes);
@@ -16,5 +16,6 @@ router.use('/teams',teamRoutes);
 router.use('/sections',sectionRoutes);
 router.use('/seats',seatRoutes);
 router.use('/matches',matchRoutes);
+router.use('/bookings',bookingRoutes);
 
 export default router;
