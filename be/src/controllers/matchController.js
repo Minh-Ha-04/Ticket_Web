@@ -37,7 +37,6 @@ export const getMatchById = async(req,res)=>{
 export const creatMatch = async(req,res)=>{
     try{
         const {homeTeamId,awayTeamId,matchDate,stadiumId}= req.body;
-        console.log(homeTeamId,awayTeamId,matchDate,stadiumId)
         const match = await matchService.createMatch({homeTeamId,awayTeamId,matchDate,stadiumId});
         res.status(201).json(match);
     }

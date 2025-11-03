@@ -7,7 +7,7 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 function Payment() {
-  const { bookingId } = useParams<{ bookingId: string }>(); // ✅ nhận bookingId từ URL
+  const { bookingId } = useParams<{ bookingId: string }>();
   const navigate = useNavigate();
 
   const [booking, setBooking] = useState<any>(null);
@@ -15,12 +15,11 @@ function Payment() {
   const [discountCode, setDiscountCode] = useState<string>('');
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [error, setError] = useState<string>('');
-  const [timeLeft, setTimeLeft] = useState<number>(300); // 5 phút = 300 giây
+  const [timeLeft, setTimeLeft] = useState<number>(300);
 
-  // 🔹 Lấy thông tin booking từ API
+  // Lấy thông tin booking
   useEffect(() => {
     if (!bookingId) return;
-
     const fetchBooking = async () => {
       try {
         const { data } = await instance.get(`/bookings/${bookingId}`);
@@ -29,58 +28,78 @@ function Payment() {
         console.error("Lỗi khi lấy booking:", err);
       }
     };
-
     fetchBooking();
   }, [bookingId]);
 
-  // 🔹 Đếm ngược giữ vé
+  // Đếm ngược giữ vé
   useEffect(() => {
     if (timeLeft <= 0) {
       alert("Hết thời gian giữ vé! Vui lòng đặt lại.");
-      navigate("/");
+      navigate("/ticket");
       return;
     }
-    const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft, navigate]);
 
   if (!booking) return <p>Đang tải dữ liệu...</p>;
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-
   const tickets = booking.tickets || [];
   const subtotal = tickets.reduce((sum: number, t: any) => sum + t.price, 0);
   const total = subtotal - discountAmount;
 
-  const validVouchers: Record<string, number> = {
-    'SALE10': 0.1,
-    'VIP20': 0.2,
-    'FAN50': 0.5,
-  };
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
 
-  const applyDiscount = () => {
-    const code = discountCode.trim().toUpperCase();
-    if (validVouchers[code]) {
-      const discount = subtotal * validVouchers[code];
-      setDiscountAmount(discount);
-      setError('');
-    } else {
-      setError('Mã giảm giá không hợp lệ');
+  const applyDiscount = async () => {
+    if (!discountCode.trim()) {
+      setError("Vui lòng nhập mã giảm giá");
       setDiscountAmount(0);
+      return;
+    }
+  
+    try {
+      const code = discountCode.trim();
+      const res = await instance.get(`/discounts/${booking.matchId}/validate/${code}`);
+      const discount = res.data;
+  
+      if (discount) {
+        let amount = 0;
+        if (discount.discountType === "percent") {
+          amount = subtotal * (discount.value / 100);
+        } else if (discount.discountType === "amount") {
+          amount = discount.value;
+        }
+  
+        // Không để tổng tiền âm
+        if (subtotal - amount < 0) {
+          amount = subtotal;
+        }
+  
+        setDiscountAmount(amount);
+        setError('');
+      } else {
+        setDiscountAmount(0);
+        setError("Mã giảm giá không hợp lệ hoặc đã hết lượt");
+      }
+    } catch (err) {
+      console.error(err);
+      setDiscountAmount(0);
+      setError("Lỗi kiểm tra mã giảm giá");
     }
   };
+  
 
   const handlePayment = async () => {
     if (!paymentMethod) {
       alert('Vui lòng chọn phương thức thanh toán!');
       return;
     }
-
     try {
       await instance.put(`/bookings/${bookingId}/pay`, {
         paymentMethod,
         amount: total,
+        discountCode: discountCode.trim() || null
       });
       alert(`Thanh toán thành công bằng ${paymentMethod}! Tổng: ${total.toLocaleString()}đ`);
       navigate("/success");
@@ -94,13 +113,13 @@ function Payment() {
       <h2>Thanh toán đơn #{bookingId}</h2>
 
       <p className={cx('countdown')}>
-        ⏳ Giữ vé trong: <strong>{minutes}:{seconds.toString().padStart(2, "0")}</strong>
+        ⏳ Giữ vé trong: <strong>{minutes}:{seconds.toString().padStart(2,"0")}</strong>
       </p>
 
       <ul className={cx('ticket-list')}>
         {tickets.map((t: any) => (
           <li key={t.id}>
-            {t.seat.number}  : {t.price.toLocaleString()}đ
+            {t.seat.number} : {t.price.toLocaleString()}đ
           </li>
         ))}
       </ul>
@@ -118,21 +137,13 @@ function Payment() {
       </div>
 
       {error && <p className={cx('error')}>{error}</p>}
-      {discountAmount > 0 && (
-        <p className={cx('discount')}>Giảm: -{discountAmount.toLocaleString()}đ</p>
-      )}
+      {discountAmount > 0 && <p className={cx('discount')}>Giảm: -{discountAmount.toLocaleString()}đ</p>}
 
       <div className={cx('payment-methods')}>
         <h3>Phương thức thanh toán</h3>
-        <label>
-          <input type="radio" name="payment" value="Momo" onChange={(e) => setPaymentMethod(e.target.value)} /> Ví Momo
-        </label>
-        <label>
-          <input type="radio" name="payment" value="Thẻ ngân hàng" onChange={(e) => setPaymentMethod(e.target.value)} /> Thẻ ngân hàng
-        </label>
-        <label>
-          <input type="radio" name="payment" value="Tiền mặt" onChange={(e) => setPaymentMethod(e.target.value)} /> Tiền mặt khi nhận vé
-        </label>
+        <label><input type="radio" name="payment" value="Momo" onChange={(e) => setPaymentMethod(e.target.value)} /> Ví Momo</label>
+        <label><input type="radio" name="payment" value="Thẻ ngân hàng" onChange={(e) => setPaymentMethod(e.target.value)} /> Thẻ ngân hàng</label>
+        <label><input type="radio" name="payment" value="Tiền mặt" onChange={(e) => setPaymentMethod(e.target.value)} /> Tiền mặt khi nhận vé</label>
       </div>
 
       <p className={cx('total')}><strong>Tổng tiền: {total.toLocaleString()}đ</strong></p>

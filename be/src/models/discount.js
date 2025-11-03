@@ -36,6 +36,10 @@ const Discount = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+    matchId : {
+      type : DataTypes.INTEGER,
+      allowNull : true,
+    }
   },
   {
     timestamps: true,
@@ -47,6 +51,9 @@ Discount.associate = (models) => {
     foreignKey: "discountId",
     as: "payments",
   });
+  Discount.belongsTo(models.Match,{
+    foreignKey : "matchId", as : "match"
+  })
 };
 
 export default Discount;

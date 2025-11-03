@@ -10,9 +10,10 @@ import {
   Typography,
   Modal,
   InputNumber,
-  Upload
+  Upload,
+  Input
 } from "antd";
-import {UploadOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { UploadOutlined, EyeOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const cx = classNames.bind(styles);
@@ -43,6 +44,17 @@ interface Section {
   price: number;
 }
 
+interface Discount {
+  id?: number; 
+  code: string;
+  discountType: "percent" | "amount";
+  value: number;
+  maxUsage: number;
+  usedCount?: number;
+  isActive?: boolean;
+}
+
+
 function TicketAdmin() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [sections, setSections] = useState<Section[]>([]);
@@ -57,36 +69,67 @@ function TicketAdmin() {
 
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
+  const [openTicketModal, setOpenTicketModal] = useState(false);
+  const [ticketStats, setTicketStats] = useState<any[]>([]);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
 
-  const fetchMatches = async () => {
+  const [discounts, setDiscounts] = useState<any[]>([]);
+  const [openDiscountModal, setOpenDiscountModal] = useState(false);
+  const [discountInput, setDiscountInput] = useState<Discount>({
+    code: "",
+    discountType: "percent",
+    value: 0,
+    maxUsage: 1,
+  });
+
+
+  const safeRequest = async (callback: () => Promise<void>, errorMsg: string) => {
     try {
-      const res = await instance.get("/matches/home");
-      console.log(res.data);
-      setMatches(res.data);
+      await callback();
     } catch (err) {
-      message.error("Không tải được danh sách trận đấu!");
+      console.error(err);
+      message.error(errorMsg);
     }
+  };
+  const fetchMatches = async () => {
+    await safeRequest(async () => {
+      const res = await instance.get("/matches/home");
+      setMatches(res.data);
+    }, "Không tải được danh sách trận đấu!");
   };
 
   const fetchSections = async () => {
-    try {
+    await safeRequest(async () => {
       const res = await instance.get(`/sections/stadium/${stadiumId}`);
       setSections(res.data.sections);
-    } catch (err) {
-      console.error("Lỗi khi tải khu vực:", err);
-      message.error("Không thể tải danh sách khu vực!");
-    }
+    }, "Không thể tải danh sách khu vực!");
+  };
+
+  const fetchTicketSections = async (matchId: number) => {
+    await safeRequest(async () => {
+      const res = await instance.get(`/tickets/match/${matchId}`);
+      setSections(res.data.sections.sections);
+      setMatchPoster(res.data.sections.match_poster || null);
+    }, "Lỗi khi tải giá vé từ ticket!");
   };
 
   useEffect(() => {
     fetchMatches();
   }, []);
 
-  const handleViewTickets = (matchId: number) => {
-    message.info(`Xem vé cho trận đấu ID: ${matchId}`);
+  const handleViewTickets = async (matchId: number) => {
+    try {
+      const res = await instance.get(`/tickets/stats/${matchId}`);
+      console.log("stats: ", res);
+      setTicketStats(res.data);
+      setSelectedMatchId(matchId);
+      setOpenTicketModal(true);
+    }
+    catch (err) {
+      console.error("Lỗi khi tải giá vé từ ticket:", err);
+    }
   };
 
   const handleAddTickets = (matchId: number) => {
@@ -95,24 +138,13 @@ function TicketAdmin() {
     setIsModalOpen(true);
   };
 
-  const fetchTicketSections = async (matchId: number) => {
-    try {
-      const res = await instance.get(`/tickets/match/${matchId}`);
-      console.log(res.data);
-      setSections(res.data.sections.sections);
-      setMatchPoster(res.data.sections.match || null);
-    } catch (err) {
-      console.error("Lỗi khi tải giá vé từ ticket:", err);
-    }
-  };
-  
   const handleUpdateTickets = (matchId: number) => {
     setSelectedMatchId(matchId);
     setIsUpdateMode(true);
     fetchTicketSections(matchId);
     setIsModalOpen(true);
   };
-  
+
 
   const showDeleteModal = (matchId: number) => {
     setDeleteId(matchId);
@@ -132,7 +164,7 @@ function TicketAdmin() {
       setDeleteId(null);
     }
   };
-  
+
 
   const handleModalOk = async () => {
     try {
@@ -149,13 +181,12 @@ function TicketAdmin() {
         },
       };
 
-      if (isUpdateMode) {
-        await instance.put(`/tickets/${selectedMatchId}`, formData,config);
-        alert("Cập nhật vé thành công!");
-      } else {
-        await instance.post(`/tickets/generate/${selectedMatchId}`, formData,config);
-        alert("Tạo vé thành công!");
-      }
+      const endpoint = isUpdateMode
+        ? `/tickets/${selectedMatchId}`
+        : `/tickets/generate/${selectedMatchId}`;
+      await instance[isUpdateMode ? "put" : "post"](endpoint, formData, config);
+      alert(isUpdateMode ? "Cập nhật vé thành công!" : "Tạo vé thành công!");
+
       setIsModalOpen(false);
       setPosterFile(null);
       setIsUpdateMode(false);
@@ -169,6 +200,52 @@ function TicketAdmin() {
     setSections((prev) =>
       prev.map((s) => (s.id === sectionId ? { ...s, price: value } : s))
     );
+  };
+
+  const fetchDiscounts = async (matchId: number) => {
+    try {
+      const res = await instance.get(`/discounts/${matchId}`);
+      console.log(res.data);
+      setDiscounts(res.data);
+    } catch (err) {
+      console.error(err);
+      message.error("Không thể tải danh sách mã giảm giá!");
+    }
+  };
+
+  const handleAddDiscount = async () => {
+    try {
+      const payload = {
+        ...discountInput,
+        matchId: selectedMatchId,
+        isActive: true
+      };
+      console.log(payload);
+      await instance.post("/discounts", payload);
+      alert("Tạo mã giảm giá thành công!");
+      fetchDiscounts(selectedMatchId!);
+      setDiscountInput({ code: "", value: 0, maxUsage: 1 , discountType : "percent"});
+    } catch (err) {
+      console.error(err);
+      message.error("Lỗi khi tạo mã giảm giá!");
+    }
+  };
+
+  const handleDeleteDiscount = async (id: number) => {
+    try {
+      await instance.delete(`/discounts/${id}`);
+      alert("Đã xóa mã giảm giá!");
+      fetchDiscounts(selectedMatchId!);
+    } catch (err) {
+      console.error(err);
+      message.error("Không thể xóa mã!");
+    }
+  };
+
+  const handleOpenDiscountModal = (matchId: number) => {
+    setSelectedMatchId(matchId);
+    fetchDiscounts(matchId);
+    setOpenDiscountModal(true);
   };
 
   const columns = [
@@ -205,22 +282,27 @@ function TicketAdmin() {
         <Space>
           {record.isTicketCreated ? (
             <>
-              <Button
-                icon={<EyeOutlined />}
-                onClick={() => handleViewTickets(record.id)}
+              <Button type="primary"
+                onClick={() => handleOpenDiscountModal(record.id)}
               >
-                Xem vé
+                Mã giảm giá
               </Button>
               <Button
-              type="default"
-              onClick={() => handleUpdateTickets(record.id)}
+                type="default"
+                onClick={() => handleViewTickets(record.id)}
               >
-              Cập nhật vé
+                Tình trạng vé
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => handleUpdateTickets(record.id)}
+              >
+                Cập nhật vé
               </Button>
               <Button
                 danger
                 icon={<DeleteOutlined />}
-                onClick={() =>showDeleteModal(record.id)}
+                onClick={() => showDeleteModal(record.id)}
               >
                 Xóa vé
               </Button>
@@ -250,18 +332,18 @@ function TicketAdmin() {
         pagination={false}
       />
 
-        <Modal
-          title={isUpdateMode ? "Cập nhật vé & poster" : "Tạo vé cho các khu vực"}
-          open={isModalOpen}
-          onOk={handleModalOk}
-          onCancel={() => {
-            setIsModalOpen(false);
-            setIsUpdateMode(false);
-            setPosterFile(null);
-            setPosterPreview(null);
-          }}
-          okText={isUpdateMode ? "Lưu thay đổi" : "Tạo vé"}
-        >
+      <Modal
+        title={isUpdateMode ? "Cập nhật vé & poster" : "Tạo vé cho các khu vực"}
+        open={isModalOpen}
+        onOk={handleModalOk}
+        onCancel={() => {
+          setIsModalOpen(false);
+          setIsUpdateMode(false);
+          setPosterFile(null);
+          setPosterPreview(null);
+        }}
+        okText={isUpdateMode ? "Lưu thay đổi" : "Tạo vé"}
+      >
         <div style={{ marginBottom: 16 }}>
           <strong>Ảnh poster:</strong>
           <Upload
@@ -275,7 +357,7 @@ function TicketAdmin() {
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
           {posterPreview && (
-            
+
             <div style={{ marginTop: 12, textAlign: "center" }}>
               <p style={{ color: "#888", marginTop: 4 }}>Xem trước poster mới</p>
               <img
@@ -293,20 +375,20 @@ function TicketAdmin() {
           )}
         </div>
         {matchPoster && !posterFile && (
-        <div style={{ marginTop: 12, textAlign: "center" }}>
-          <p style={{ color: "#888", marginTop: 4 }}>Poster hiện tại</p>
-          <img
-            src={matchPoster}
-            alt="Poster hiện tại"
-            style={{
-              width: "100%",
-              maxHeight: "250px",
-              objectFit: "contain",
-              borderRadius: "8px",
-              border: "1px solid #ddd",
-            }}
-          />
-        </div>
+          <div style={{ marginTop: 12, textAlign: "center" }}>
+            <p style={{ color: "#888", marginTop: 4 }}>Poster hiện tại</p>
+            <img
+              src={matchPoster}
+              alt="Poster hiện tại"
+              style={{
+                width: "100%",
+                maxHeight: "250px",
+                objectFit: "contain",
+                borderRadius: "8px",
+                border: "1px solid #ddd",
+              }}
+            />
+          </div>
         )}
 
         {sections.map((section) => (
@@ -331,6 +413,155 @@ function TicketAdmin() {
       >
         <p>Bạn có chắc chắn muốn xóa vé trận này?</p>
       </Modal>
+
+      <Modal
+        title={`Tình trạng vé trận đấu #${selectedMatchId}`}
+        open={openTicketModal}
+        onCancel={() => setOpenTicketModal(false)}
+        footer={[
+          <Button key="close" onClick={() => setOpenTicketModal(false)}>
+            Đóng
+          </Button>,
+        ]}
+        width={700}
+      >
+        <Table
+          dataSource={ticketStats}
+          pagination={false}
+          columns={[
+            {
+              title: "Khu vực",
+              dataIndex: "sectionName",
+              key: "sectionName",
+            },
+            {
+              title: "Tổng vé",
+              dataIndex: "totalTickets",
+              key: "totalTickets",
+            },
+            {
+              title: "Đã bán",
+              dataIndex: "soldTickets",
+              key: "soldTickets",
+            },
+            {
+              title: "Còn trống",
+              dataIndex: "availableTickets",
+              key: "availableTickets",
+            },
+          ]}
+          rowKey="sectionId"
+        />
+      </Modal>
+
+      <Modal
+        title={`🎟️ Mã giảm giá cho trận #${selectedMatchId}`}
+        open={openDiscountModal}
+        onCancel={() => setOpenDiscountModal(false)}
+        footer={null}
+        width={600}
+        className={cx("discountModal")}
+      >
+        <div className={cx("discountForm")}>
+          <div className={cx("formRow")}>
+            <label>Mã giảm giá</label>
+            <Input
+              placeholder="VD: SAVE10"
+              value={discountInput.code}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDiscountInput({ ...discountInput, code: e.target.value })
+              }
+            />
+          </div>
+
+          <div className={cx("formRow")}>
+            <label>Loại giảm</label>
+            <select
+              value={discountInput.discountType}
+              onChange={(e) =>
+                setDiscountInput({
+                  ...discountInput,
+                  discountType: e.target.value as "percent" | "amount",
+                })
+              }
+              className={cx("selectType")}
+            >
+              <option value="percent">Phần trăm (%)</option>
+              <option value="amount">Số tiền (VNĐ)</option>
+            </select>
+          </div>
+
+          <div className={cx("formRow")}>
+            <label>
+              Giá trị giảm{" "}
+              {discountInput.discountType === "percent" ? "(%)" : "(VNĐ)"}
+            </label>
+            <InputNumber
+              style={{ width: "100%" }}
+              min={1}
+              max={discountInput.discountType === "percent" ? 100 : 1000000}
+              value={discountInput.value}
+              onChange={(value) =>
+                setDiscountInput({ ...discountInput, value: value ?? 0 })
+              }
+            />
+          </div>
+
+          <div className={cx("formRow")}>
+            <label>Số lượt sử dụng tối đa</label>
+            <InputNumber
+              style={{ width: "100%" }}
+              min={1}
+              value={discountInput.maxUsage}
+              onChange={(value) =>
+                setDiscountInput({ ...discountInput, maxUsage: value ?? 1 })
+              }
+            />
+          </div>
+
+          <Button type="primary" onClick={handleAddDiscount} block>
+             Thêm mã giảm giá
+          </Button>
+        </div>
+
+        <Table
+          dataSource={discounts}
+          rowKey="id"
+          columns={[
+            { title: "Mã", dataIndex: "code" },
+            {
+              title: "Loại",
+              dataIndex: "discountType",
+              render: (t) => (t === "percent" ? "%" : "VNĐ"),
+            },
+            {
+              title: "Giá trị",
+              render: (_, d) =>
+                d.discountType === "percent" ? `${d.value}%` : `${d.value.toLocaleString()}₫`,
+            },
+            {
+              title: "Lượt dùng",
+              render: (_, d) => `${d.usedCount}/${d.maxUsage}`,
+            },
+            {
+              title: "Trạng thái",
+              dataIndex: "isActive",
+              render: (v) => (v ? "🟢 Hoạt động" : "🔴 Tắt"),
+            },
+            {
+              title: "Hành động",
+              render: (_, d) => (
+                <Button danger size="small" onClick={() => handleDeleteDiscount(d.id)}>
+                  Xóa
+                </Button>
+              ),
+            },
+          ]}
+          pagination={false}
+        />
+      </Modal>
+
+
 
     </div>
   );

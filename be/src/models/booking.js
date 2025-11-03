@@ -8,6 +8,7 @@ const Booking = sequelize.define("Booking", {
     bookingDate : { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
     status : { type: DataTypes.ENUM('pending','paid', 'confirmed','canceled','expired'), allowNull: false, defaultValue: 'pending' },
     totalPrice : { type: DataTypes.FLOAT, allowNull: false },
+    matchId : { type: DataTypes.INTEGER, allowNull: false },
 }, {
     timestamps: true,
 });
@@ -20,7 +21,7 @@ Booking.associate = (models) => {
         onDelete: "CASCADE",
         onUpdate: "CASCADE",
       });
-    
+    Booking.belongsTo(models.Match,{foreignKey : 'matchId',as : "match"});
 };
 
 export default Booking;

@@ -10,3 +10,33 @@
     object-fit: cover;
   }
 }
+.discountModal {
+  .discountForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .formRow {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  .selectType {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+    outline: none;
+
+    &:focus {
+      border-color: #1677ff;
+    }
+  }
+}

@@ -15,10 +15,10 @@ export const getBookingById = async(req,res)=>{
 export const createBooking = async (req,res)=>{
     
     try {
-        const {userId, ticketIds} = req.body;
-        if( !userId || !ticketIds || !Array.isArray(ticketIds))
+        const {userId, ticketIds, matchId} = req.body;
+        if( !userId || !ticketIds || !Array.isArray(ticketIds) )
         {
-            return res.status(400).json({ message: "Thiếu dữ liệu userId hoặc ticketIds." });
+            return res.status(400).json({ message: "Thiếu dữ liệu userId, ticketIds hoặc matchId." });
         }
         const booking =  await bookingService.createBooking(userId,ticketIds);
         res.status(201).json({

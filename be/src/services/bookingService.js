@@ -37,10 +37,11 @@ export const createBooking = async (userId, ticketIds) =>{
         {
             throw new Error ("Một số vé không khả dụng hoặc đã được giữ.");
         }
-
+        const matchId = tickets[0].matchId;
         const totalOriginal = tickets.reduce((sum,ticket)=> sum + ticket.price , 0);
         const newBooking = await Booking.create({
             userId,
+            matchId,
             totalPrice : totalOriginal,
             status : "pending",
         },

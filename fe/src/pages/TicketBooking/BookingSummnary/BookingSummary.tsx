@@ -71,8 +71,8 @@ function BookingSummary({ selectedTickets , onRemoveTicket }: BookingSummaryProp
       const ticketIds = selectedTickets.map(t => t.ticket.id);
 
       console.log("Gửi request booking:", { userId, ticketIds });
-      const res = await instance.post("/bookings", { userId, ticketIds });
-      console.log(res.data.booking.newBooking.id);
+      const res = await instance.post("/bookings", { userId, ticketIds});
+            console.log(res.data.booking);
       const bookingId = res.data.booking.newBooking.id;
       navigate(`/payment/${bookingId}`);
     } catch (err: any) {

@@ -20,6 +20,7 @@ Match.associate = (models) => {
     Match.belongsTo(models.Team, { as: 'awayTeam', foreignKey: 'awayTeamId' });
     Match.belongsTo(models.Stadium, { foreignKey: 'stadiumId' });
     Match.hasMany(models.Ticket, { foreignKey: 'matchId', as: 'tickets' });
+    Match.hasMany(models.Discount, {foreignKey : 'matchId', as: 'discounts'});
 };
 
 export default Match;
