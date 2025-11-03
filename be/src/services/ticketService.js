@@ -6,6 +6,7 @@ const { Match,  Ticket, Seat,Section  } = models;
 
 dotenv.config();
 
+const stadiumId = process.env.HOME_STADIUM_ID;
 
 export const generateTicketsForHomeTeam = async (matchId,file,sections) => {
   return sequelize.transaction(async (transaction) => {
@@ -185,3 +186,34 @@ export const getTicketPriceByMatch = async (matchId) => {
     sections: sortedSections,
   };
 };
+
+
+export const getTicketSoldByMatch = async(matchId) =>{
+  const sections = await Section.findAll({
+    where : {stadiumId},
+    attributes : ["id","name"],
+  });
+
+  const stats = await Promise.all(
+    sections.map(async(section)=>{
+      const totalTickets = await Ticket.count({
+        where : {sectionId : section.id, matchId},
+      });
+
+      const soldTickets = await Ticket.count({
+        where: { sectionId: section.id, status: "sold" , matchId},
+      });
+
+      const availableTickets =  totalTickets - soldTickets ;
+
+      return {
+        sectionId : section.id,
+        sectionName : section.name,
+        totalTickets,
+        soldTickets,
+        availableTickets
+      };
+    })
+  );
+  return stats;
+}

@@ -15,6 +15,7 @@ export const releaseHeldTickets = async () => {
   });
 
   for (const ticket of expiredTickets) {
+    const bookingId = ticket.bookingId;
     // Cập nhật vé về available
     await ticket.update({
       status: "available",
@@ -23,15 +24,15 @@ export const releaseHeldTickets = async () => {
     });
 
     // Cập nhật booking thành expired nếu tất cả vé của nó đều đã hết hạn
-    if (ticket.bookingId) {
+    if (bookingId) {
       const remainingTickets = await Ticket.count({
-        where: { bookingId: ticket.bookingId, status: { [Op.not]: "available" } },
+        where: { bookingId, status: { [Op.not]: "available" } },
       });
-      
+  
       if (remainingTickets === 0) {
         await Booking.update(
           { status: "expired" },
-          { where: { id: ticket.bookingId } }
+          { where: { id: bookingId } }
         );
       }
     }

@@ -24,7 +24,7 @@ Section.associate = (models) => {
     onUpdate: "CASCADE",
   });
   Section.hasMany(models.Ticket, {
-    foreignKey: "TicketId",
+    foreignKey: "sectionId",
     as: "tickets",
     onDelete: "CASCADE",
     onUpdate: "CASCADE",

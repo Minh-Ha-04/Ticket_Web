@@ -13,4 +13,6 @@ router.get("/section/:sectionId/match/:matchId", ticketController.getTicketsBySe
 
 router.get("/match/:matchId", ticketController.getTicketPriceByMatch);
 
+router.get("/stats/:matchId",ticketController.getTicketSoldByMatch);
+
 export  default router;

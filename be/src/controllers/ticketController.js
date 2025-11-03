@@ -86,4 +86,18 @@ export const getTicketPriceByMatch = async (req, res) => {
   }
 };
 
+export const getTicketSoldByMatch = async (req,res) =>{
+  try{
+    const {matchId} = req.params;
+
+    const stats   = await ticketService.getTicketSoldByMatch(matchId);
+    res.status(200).json(stats);
+  }
+  catch(error)
+  {
+    console.error("Error fetching ticket stats by match:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
 
