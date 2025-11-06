@@ -8,6 +8,7 @@ import seatRoutes from './seatRoutes.js';
 import matchRoutes from './matchRoutes.js';
 import bookingRoutes from './bookingRoutes.js';
 import discountRoutes from './discountRoutes.js';
+import payRoutes from './payRoutes.js';
 const router = express.Router();
 
 router.use('/auth', authRoutes);
@@ -19,4 +20,5 @@ router.use('/seats',seatRoutes);
 router.use('/matches',matchRoutes);
 router.use('/bookings',bookingRoutes);
 router.use('/discounts',discountRoutes);
+router.use('/pays',payRoutes);
 export default router;

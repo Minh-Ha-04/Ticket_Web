@@ -12,6 +12,7 @@
 
     import LoginSuccess from "../pages/LoginSucess";
     import PageError from "../pages/PageError";
+    import PaymentSuccess from "../pages/PaymentSuccess";
 
     import TeamAdmin from "../pages/TeamAdmin";
     import MatchAdmin from "../pages/MatchAdmin";
@@ -30,7 +31,8 @@
                 {path: "/", element: <Home />},
                 {path: "/ticket", element: <Ticket />},
                 {path: "/ticket/:matchId",element : <TicketBooking/>},
-                {path: "/payment/:bookingId" , element :<Payment/>}
+                {path: "/payment/:bookingId" , element :<Payment/>},
+                {path: "/payment-success",element : <PaymentSuccess/>}
             ]
 
         },
