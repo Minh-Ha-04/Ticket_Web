@@ -6,8 +6,9 @@ const Payment = sequelize.define("Payment", {
     amount: { type: DataTypes.FLOAT, allowNull: false },
     paymentMethod: { type: DataTypes.ENUM("momo", "vnpay", "credit_card"),allowNull: false,},
     status: { type: DataTypes.ENUM('pending', 'completed', 'failed'), allowNull: false, defaultValue: 'pending' },
-    transactionId: { type: DataTypes.STRING, allowNull: true, unique: true },
+    orderId: { type: DataTypes.STRING, allowNull: true, unique: true },
     bookingId : { type: DataTypes.INTEGER, allowNull: false},
+    userId: { type: DataTypes.INTEGER, allowNull: false },
     discountId : {type: DataTypes.INTEGER, allowNull:true}
 }, {
     timestamps: true,
@@ -16,6 +17,9 @@ const Payment = sequelize.define("Payment", {
 Payment.associate = (models) => {
     Payment.belongsTo(models.Booking,{foreignKey : 'bookingId',as:'booking'});
     Payment.belongsTo(models.Discount , {foreignKey :'discountId', as :"discount"});
+    Payment.belongsTo(models.User , {foreignKey:'userId', as : "user"});
 };
+
+
 
 export default Payment;

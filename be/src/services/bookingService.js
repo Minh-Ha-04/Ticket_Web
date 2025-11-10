@@ -9,7 +9,7 @@ export const getBookingById = async(id) =>{
         {
             include : 
             [
-                {model : Ticket , as : "tickets",attributes: ["id", "seatId", "price", "status"],include: [
+                {model : Ticket , as : "tickets",attributes: ["id", "seatId", "price", "status","holdExpiresAt"],include: [
                     {
                       model: Seat,
                       as: "seat",
@@ -48,7 +48,7 @@ export const createBooking = async (userId, ticketIds) =>{
         {transaction : t}
         );
 
-        const holdExpiresAt = new Date(Date.now() + 5*60*1000);
+        const holdExpiresAt = new Date(Date.now() + 15*60*1000);
         await Ticket.update(
             {
                 status:"held",

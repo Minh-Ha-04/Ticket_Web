@@ -15,7 +15,7 @@ function Payment() {
   const [discountCode, setDiscountCode] = useState<string>('');
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [error, setError] = useState<string>('');
-  const [timeLeft, setTimeLeft] = useState<number>(300);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   // ======= Lấy thông tin booking =======
   useEffect(() => {
@@ -24,6 +24,18 @@ function Payment() {
       try {
         const { data } = await instance.get(`/bookings/${bookingId}`);
         setBooking(data);
+        if (data?.tickets?.length) {
+          const holds = data.tickets
+            .filter((t: any) => t.holdExpiresAt)
+            .map((t: any) => new Date(t.holdExpiresAt).getTime());
+
+          if (holds.length > 0) {
+            const earliestHold = Math.min(...holds);
+            const diff = Math.max(Math.floor((earliestHold - Date.now()) / 1000), 0);
+            setTimeLeft(diff);
+          }
+
+        }
       } catch (err) {
         console.error("Lỗi khi lấy booking:", err);
       }
@@ -33,14 +45,22 @@ function Payment() {
 
   // ======= Đếm ngược giữ vé =======
   useEffect(() => {
-    if (timeLeft <= 0) {
-      alert("Hết thời gian giữ vé! Vui lòng đặt lại.");
-      navigate("/ticket");
-      return;
-    }
-    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    if (timeLeft <= 0) return; // không chạy interval nếu đã hết
+  
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          alert("Hết thời gian giữ vé! Vui lòng đặt lại.");
+          navigate("/ticket");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  
     return () => clearInterval(timer);
-  }, [timeLeft, navigate]);
+  }, [navigate]); 
 
   if (!booking) return <p>Đang tải dữ liệu...</p>;
 
@@ -96,11 +116,13 @@ function Payment() {
       const res = await instance.post(`/pays/create`, {
         method: paymentMethod.toLowerCase() === 'momo' ? 'momo' : 'vnpay',
         amount: total,
+        bookingId,
+        discountCode,
         orderInfo: `Thanh toán đơn #${bookingId}`,
       });
 
       if (res.data.payUrl) {
-        window.open(res.data.payUrl, "_blank");
+        window.location.href = res.data.payUrl;
       } else {
         alert("Không thể tạo phiên thanh toán, vui lòng thử lại!");
       }
