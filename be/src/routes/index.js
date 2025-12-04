@@ -10,8 +10,10 @@ import bookingRoutes from './bookingRoutes.js';
 import discountRoutes from './discountRoutes.js';
 import payRoutes from './payRoutes.js';
 import pictureRoutes from './pictureRoutes.js';
+import userRourtes from './userRoutes.js';
 const router = express.Router();
 
+router.use('/profile',userRourtes);
 router.use('/auth', authRoutes);
 router.use('/tickets', ticketRoutes);
 router.use('/stadiums',stadiumRoutes);

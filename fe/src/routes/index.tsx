@@ -5,6 +5,7 @@
     import LayoutAdmin from "../layouts/LayoutAdmin";
 
     import Home from "../pages/Home";
+    import Profile from "../pages/Profile";
     import Ticket from "../pages/Tickets";
     import Login from "../pages/Login/Login";
     import TicketBooking from "../pages/TicketBooking/TicketBooking";
@@ -29,6 +30,8 @@
             element: <LayoutDefault />,
             children: [
                 {path: "/", element: <Home />},
+                {path: "/profile", element : <Profile/>},
+
                 {path: "/ticket", element: <Ticket />},
                 {path: "/ticket/:matchId",element : <TicketBooking/>},
                 {path: "/payment/:bookingId" , element :<Payment/>},

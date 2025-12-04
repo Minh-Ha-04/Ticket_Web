@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./Header.module.scss";
 import classNames from "classnames/bind";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button , Space} from "antd";
 
 const cx = classNames.bind(styles);
 
@@ -47,9 +47,15 @@ function Header() {
 
       <div className="sign-in">
         {isLoggedIn ? (
+          <Space>
+            <Button type = "default" onClick={() => navigate("/profile")} > 
+            Thông Tin 
+          </Button>
+          
           <Button type="primary" onClick={handleLogout}>
             Đăng xuất
           </Button>
+          </Space>
         ) : (
           <Link to="/login">
             <Button type="primary">Đăng nhập</Button>
