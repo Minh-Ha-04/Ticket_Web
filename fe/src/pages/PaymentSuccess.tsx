@@ -38,7 +38,7 @@ function PaymentSuccess() {
         <>
           <h2>❌ Thanh toán thất bại</h2>
           <p>Lý do: {searchParams.get("message") || "Không xác định"}</p>
-          <button onClick={() => navigate("/cart")}>Thử lại</button>
+          <button onClick={() => navigate("/ticket")}>Thử lại</button>
         </>
       )}
     </div>

@@ -17,7 +17,7 @@
     import TeamAdmin from "../pages/TeamAdmin";
     import MatchAdmin from "../pages/MatchAdmin";
     import TicketAdmin from "../pages/TicketAdmin";
-    import Admin from "../pages/Admin";
+    import Admin from "../pages/AdminHome";
     import StadiumAdmin from "../pages/StadiumAdmin";
     import SectionSeatAdmin from "../pages/SectionSeatAdmin";
 

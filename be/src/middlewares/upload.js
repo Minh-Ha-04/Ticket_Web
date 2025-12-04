@@ -7,7 +7,6 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'Real-Madrid', // folder trên Cloudinary
     allowed_formats: ['jpg', 'png', 'jpeg', 'webp','svg'],
-    transformation: [{ width: 300, height: 300, crop: 'limit' }],
   },
 });
 

@@ -20,6 +20,12 @@ const Navbar = () => {
 
   const menuItems = [
     {
+      key : "poster",
+      icon: <TeamOutlined />,
+      label : "Quản lý giao diện",
+      onClick : () => navigate("/admin")
+    },
+    {
       key: "team",
       icon: <TeamOutlined />,
       label: "Quản lý đội bóng",
