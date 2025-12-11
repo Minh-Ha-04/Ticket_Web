@@ -1,0 +1,112 @@
+.calendar-container {
+  width: 100%;
+  padding: 20px;
+}
+
+/* ========================
+   GRID 5 TRẬN MỖI HÀNG
+======================== */
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  gap: 18px;
+  padding: 10px 20px;
+}
+
+/* ========================
+   MATCH CARD
+======================== */
+.match-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   /* Giữ nội dung đều từ trên xuống */
+  min-height: 240px;                /* Cho card cao đẹp và đồng đều */
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: 0.2s ease;
+  }
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+}
+
+/* ========================
+   TOP SECTION
+======================== */
+.match-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  .match-date {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .match-time {
+    color: #666;
+  }
+}
+
+/* ========================
+   TEAMS
+======================== */
+.teams {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+
+  .team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    width: 60px;
+  }
+
+  .vs {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 0 8px;
+  }
+}
+
+/* ========================
+   BOTTOM SECTION (BUTTON + STADIUM)
+======================== */
+
+.bottom-section {
+  margin-top: auto;      /* đẩy xuống đáy card */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Giữ chỗ cho nút mua vé, để sân luôn đứng đúng vị trí */
+.ticket-btn-wrapper {
+  min-height: 42px;      /* chiều cao cố định kể cả khi không có nút */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Stadium luôn nằm dưới */
+.stadium {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #555;
+}

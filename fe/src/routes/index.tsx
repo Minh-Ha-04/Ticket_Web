@@ -7,9 +7,11 @@
     import Home from "../pages/Home";
     import Profile from "../pages/Profile";
     import Ticket from "../pages/Tickets";
+    import Calendar from "../pages/Calendar";
     import Login from "../pages/Login/Login";
     import TicketBooking from "../pages/TicketBooking/TicketBooking";
     import Payment from "../pages/Payment";
+    
 
     import LoginSuccess from "../pages/LoginSucess";
     import PageError from "../pages/PageError";
@@ -31,6 +33,8 @@
             children: [
                 {path: "/", element: <Home />},
                 {path: "/profile", element : <Profile/>},
+
+                {path : "/calendar",element :<Calendar/>},
 
                 {path: "/ticket", element: <Ticket />},
                 {path: "/ticket/:matchId",element : <TicketBooking/>},
