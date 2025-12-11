@@ -15,8 +15,8 @@ function PaymentSuccess() {
       setStatus("success");
       instance
         .get(`/pays/confirm?orderId=${orderId}`)
-        .then(() => console.log("✅ Đã xác nhận thanh toán thành công"))
-        .catch((err) => console.error("❌ Lỗi xác nhận:", err));
+        .then(() => console.log(" Đã xác nhận thanh toán thành công"))
+        .catch((err) => console.error(" Lỗi xác nhận:", err));
     } else {
       setStatus("fail");
     }

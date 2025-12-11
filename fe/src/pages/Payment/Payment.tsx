@@ -110,17 +110,31 @@ function Payment() {
       alert('Vui lòng chọn phương thức thanh toán!');
       return;
     }
-
+  
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Bạn chưa đăng nhập!");
+        return;
+      }
+  
       // Gọi API thanh toán thật
-      const res = await instance.post(`/pays/create`, {
-        method: paymentMethod.toLowerCase() === 'momo' ? 'momo' : 'vnpay',
-        amount: total,
-        bookingId,
-        discountCode,
-        orderInfo: `Thanh toán đơn #${bookingId}`,
-      });
-
+      const res = await instance.post(
+        `/pays/create`,
+        {
+          method: paymentMethod.toLowerCase() === 'momo' ? 'momo' : 'vnpay',
+          amount: total,
+          bookingId,
+          discountCode,
+          orderInfo: `Thanh toán đơn #${bookingId}`,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // 
+          },
+        }
+      );
+  
       if (res.data.payUrl) {
         window.location.href = res.data.payUrl;
       } else {
@@ -131,6 +145,7 @@ function Payment() {
       alert("Thanh toán thất bại!");
     }
   };
+  
 
   return (
     <div className={cx('payment')}>

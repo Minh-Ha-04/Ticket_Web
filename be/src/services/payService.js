@@ -4,12 +4,11 @@ import querystring from "qs";
 
 
 // ================= MoMo ==================
-export const createMomoPayment = async (amount, orderInfo) => {
+export const createMomoPayment = async (amount, orderInfo,orderId) => {
     const partnerCode = "MOMO";
     const accessKey = "F8BBA842ECF85";
     const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-    const requestId = partnerCode + Date.now();
-    const orderId = requestId;
+    const requestId = orderId
     const redirectUrl = "http://localhost:3000/payment-success";
     const ipnUrl = "http://localhost:5000/api/pays/momo-ipn";
     const requestType = "captureWallet";

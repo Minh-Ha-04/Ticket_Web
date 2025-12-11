@@ -1,30 +1,48 @@
 import axios from "axios";
 
 
+let setLoadingGlobal: ((value: boolean) => void) | null = null;
+
+
+export const registerSetLoading = (fn: (value: boolean) => void) => {
+  setLoadingGlobal = fn;
+};
+
 const instance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL, 
+  baseURL: process.env.REACT_APP_API_URL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Thêm interceptor để tự động gắn token
+
 instance.interceptors.request.use(
   (config) => {
+    // bật loading
+    if (setLoadingGlobal) setLoadingGlobal(true);
+
+    // gắn token
     const token = localStorage.getItem("token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    if (setLoadingGlobal) setLoadingGlobal(false);
+    return Promise.reject(error);
+  }
 );
 
-// Xử lý response chung
 instance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (setLoadingGlobal) setLoadingGlobal(false);
+    return response;
+  },
   (error) => {
+    if (setLoadingGlobal) setLoadingGlobal(false);
     console.error("API error:", error);
     return Promise.reject(error);
   }

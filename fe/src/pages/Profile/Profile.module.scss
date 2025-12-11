@@ -28,4 +28,39 @@
       border-radius: 8px;
     }
   }
+  .ticket-card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-left: 4px solid #1677ff;
+  }
+  
+  .match-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .match-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .date {
+    color: #666;
+    font-size: 13px;
+  }
+  
+  .match-info p {
+    margin: 4px 0;
+  }
+  
+  .buy-date {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+  }
   

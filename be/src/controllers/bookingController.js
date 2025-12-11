@@ -12,6 +12,15 @@ export const getBookingById = async(req,res)=>{
     }
 };
 
+export const getBookingByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const booking = await bookingService.getBookingByUserId(userId);
+        res.json({ status: "success", data: booking });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+};
 export const createBooking = async (req,res)=>{
     
     try {

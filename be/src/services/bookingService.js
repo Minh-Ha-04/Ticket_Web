@@ -1,7 +1,5 @@
 import models, { sequelize } from "../models/index.js";
-const { Booking, Ticket, User ,Seat } = models;
-
-
+const { Booking, Ticket, User ,Seat,Match ,Team,Stadium} = models;
 
 
 export const getBookingById = async(id) =>{
@@ -23,6 +21,62 @@ export const getBookingById = async(id) =>{
     if(!booking) throw new Error ("Không tìm thấy đơn đặt vé.");
     return booking;
 }
+
+
+export const getBookingByUserId = async (userId) => {
+    const booking = await Booking.findAll({
+        where: { 
+            userId,
+            status: "confirmed"
+        },
+        include: [
+            { 
+                model: Ticket,
+                as: "tickets",
+                attributes: ["id", "seatId", "price", "status", "holdExpiresAt"],
+                
+                include: [
+                    { model: Seat, as: "seat", attributes: ["id", "number"] },
+
+                    {
+                        model: Match,
+                        as: "match",
+                        attributes: ["id", "matchDate"],
+
+                        include: [
+                            {
+                                model: Team,
+                                as: "homeTeam",
+                                attributes: ["id", "name", "logo", "shortname"]
+                            },
+                            {
+                                model: Team,
+                                as: "awayTeam",
+                                attributes: ["id", "name", "logo", "shortname"]
+                            },
+                            {
+                                model: Stadium,
+                                attributes: ["id", "name"]
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            { 
+                model: User,
+                as: "user",
+                attributes: ["id", "username", "email"]
+            }
+        ],
+    });
+
+    if (!booking || booking.length === 0) {
+        throw new Error("Không tìm thấy đơn đặt vé.");
+    }
+    return booking;
+};
+
 
 
 export const createBooking = async (userId, ticketIds) =>{
