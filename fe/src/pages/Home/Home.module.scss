@@ -1,0 +1,69 @@
+.home {
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* căn giữa poster */
+  }
+  
+  /* POSTER Ở TRÊN, CÓ KHUNG */
+  .poster {
+    width: 100%;
+    margin-bottom: 20px;
+  
+    img {
+      width: 100%;
+      height: 300px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* thêm khung shadow */
+    }
+  }
+  
+  /* CONTENT + ADS NẰM NGANG */
+  .body {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; /* giới hạn toàn bộ khu vực content + ads */
+  }
+  
+  /* KHU VỰC NỘI DUNG CHÍNH */
+  .content {
+    flex: 3;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    min-height: 500px;
+  }
+  
+  /* QUẢNG CÁO DỌC */
+  .ads {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  
+    img {
+      width: 100%;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+  }
+  
+  /* MOBILE RESPONSIVE */
+  @media (max-width: 768px) {
+    .body {
+      flex-direction: column;
+    }
+  
+    .ads {
+      flex-direction: row;
+      flex-wrap: wrap;
+  
+      img {
+        width: 48%;
+      }
+    }
+  }
+  

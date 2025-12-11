@@ -1,31 +1,50 @@
-@import "../../styles/variables.scss"; 
-
-
 .wrapper {
-  width: 100%;
-  height: 70px;
-  background: $background-color;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 $spacing-md;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);;
-}
-.left img {
-  height: 50px;
-  object-fit: contain;
-}
-.center a {
-  text-decoration: none;
-  color: $text-color;
-  font-weight: 500;
-  transition: color 0.2s;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 70px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
 
-  &:hover {
-    color: $primary-color;
+  img {
+    height: 50px;
   }
 }
 
-.profile {
-  
+.left {
+  flex: 1;
+}
+
+.center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+
+  a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    &:hover {
+      color: #1890ff; // màu chính Ant Design
+    }
+  }
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-weight: 500;
+  color: #555;
+}
+
+.sign-in {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
 }

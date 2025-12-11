@@ -10,7 +10,7 @@ export const registerSetLoading = (fn: (value: boolean) => void) => {
 
 const instance = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
-  timeout: 30000,
+  timeout: 500000,
   headers: {
     "Content-Type": "application/json",
   },

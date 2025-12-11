@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import instance from "../../utils/axiosInstance";
+import classNames from "classnames/bind";
+import styles from "./Home.module.scss";
+
+const cx = classNames.bind(styles);
 
 interface User {
   username: string;
@@ -45,43 +49,35 @@ function Home() {
   }, []);
 
   return (
-    <div >
-
-      <div style={{ flex: 3 }}>
-
-        {/* POSTER CHÍNH */}
+    <div className={cx("home")}>
+      {/* POSTER */}
+      <div className={cx("poster")}>
         {poster ? (
-          <img
-            src={poster.url}
-            alt="Poster chính"
-            style={{
-              width: "100%",
-              height: "auto",
-              objectFit: "cover",
-              borderRadius: "10px",
-              marginTop: "15px",
-            }}
-          />
+          <img src={poster.url} alt="Poster chính" />
         ) : (
           <p>Không có poster nào!</p>
         )}
       </div>
 
-      {/* QUẢNG CÁO BÊN PHẢI */}
-      <div >
-        {ads.length > 0 ? (
-          ads.map((ad) => (
-            <img
-              key={ad.id}
-              src={ad.url}
-              alt="Quảng cáo"
-            />
-          ))
-        ) : (
-          <p>Không có quảng cáo</p>
-        )}
-      </div>
+      {/* CONTENT + ADS */}
+      <div className={cx("body")}>
+        <div className={cx("content")}>
+          {/* NỘI DUNG CHÍNH */}
+          <h2>Chào mừng {user?.username || "bạn"}!</h2>
+          <p>Đây là nội dung chính của trang Home.</p>
+          {/* Bạn có thể thêm các component, bài viết, hoặc danh sách ở đây */}
+        </div>
 
+        <div className={cx("ads")}>
+          {ads.length > 0 ? (
+            ads.map((ad) => (
+              <img key={ad.id} src={ad.url} alt="Quảng cáo" />
+            ))
+          ) : (
+            <p>Không có quảng cáo</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
