@@ -1,16 +1,17 @@
-
 import { Menu } from "antd";
 import {
-  TeamOutlined,
-  UserOutlined,
+  PictureOutlined,
+  TrophyOutlined,
   CalendarOutlined,
+  CreditCardOutlined,
+  EnvironmentOutlined,
+  UserOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
-
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -20,40 +21,46 @@ const Navbar = () => {
 
   const menuItems = [
     {
-      key : "poster",
-      icon: <TeamOutlined />,
-      label : "Quản lý giao diện",
-      onClick : () => navigate("/admin")
+      key: "poster",
+      icon: <PictureOutlined />,
+      label: "Quản lý giao diện",
+      onClick: () => navigate("/admin"),
     },
     {
       key: "team",
-      icon: <TeamOutlined />,
+      icon: <TrophyOutlined />,
       label: "Quản lý đội bóng",
       onClick: () => navigate("/admin/teams"),
     },
     {
       key: "matches",
-      icon: <UserOutlined />,
+      icon: <CalendarOutlined />,
       label: "Quản lý trận đấu",
       onClick: () => navigate("/admin/matches"),
     },
     {
       key: "tickets",
-      icon: <CalendarOutlined />,
+      icon: <CreditCardOutlined />,
       label: "Quản lý vé",
       onClick: () => navigate("/admin/tickets"),
     },
     {
       key: "stadiums",
-      icon: <CalendarOutlined />,
+      icon: <EnvironmentOutlined />,
       label: "Quản lý sân vận động",
       onClick: () => navigate("/admin/stadiums"),
+    },
+    {
+      key: "users",
+      icon: <UserOutlined />,
+      label: "Quản lý người dùng",
+      onClick: () => navigate("/admin/profile"),
     },
     {
       key: "logout",
       icon: <LogoutOutlined />,
       label: "Đăng xuất",
-      onClick: handleLogout, // 
+      onClick: handleLogout,
     },
   ];
 

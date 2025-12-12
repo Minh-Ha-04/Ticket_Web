@@ -23,6 +23,7 @@
     import Admin from "../pages/AdminHome";
     import StadiumAdmin from "../pages/StadiumAdmin";
     import SectionSeatAdmin from "../pages/SectionSeatAdmin";
+    import UserAdmin from "../pages/UserAdmin";
 
 
     import ProtectedRoute from "./ProtectedRoute";
@@ -57,6 +58,7 @@
                     </ProtectedRoute>,
             children:[
                 {index: true ,element:<Admin />},
+                {path: "profile",element :<UserAdmin/> },
                 {path: "teams",element:<TeamAdmin />},
                 {path: "matches",element:<MatchAdmin />},
                 {path: "tickets",element:<TicketAdmin />},

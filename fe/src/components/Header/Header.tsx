@@ -3,7 +3,7 @@ import styles from "./Header.module.scss";
 import classNames from "classnames/bind";
 import { Link, useNavigate } from "react-router-dom";
 import { Button , Space} from "antd";
-
+import instance from "../../utils/axiosInstance";
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -11,16 +11,26 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleStorageChange = () => {
+    const checkLogin = async () => {
       const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
+      if (!token) {
+        setIsLoggedIn(false);
+        return;
+      }
+  
+      try {
+        await instance.get("/auth/me");
+        setIsLoggedIn(true);
+      } catch (error) {
+        localStorage.removeItem("token");
+        setIsLoggedIn(false);
+      }
     };
   
-    window.addEventListener("storage", handleStorageChange);
-    handleStorageChange();
-  
-    return () => window.removeEventListener("storage", handleStorageChange);
+    checkLogin();
   }, []);
+  
+  
 
   const handleLogout = () => {
     localStorage.removeItem("token");

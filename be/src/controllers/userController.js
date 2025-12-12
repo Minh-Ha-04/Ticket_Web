@@ -55,3 +55,38 @@ export const changePassword = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+
+export const getUsers = async (req, res) => {
+  const users = await User.findAll();
+  res.json(users);
+};
+
+export const createUser = async (req, res) => {
+  const { username, email, role, password } = req.body;
+
+  const hash = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    username,
+    email,
+    role,
+    password: hash,
+  });
+
+  res.json(user);
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { username, email, role } = req.body;
+
+  await User.update({ username, email, role }, { where: { id } });
+  res.json({ message: "Updated" });
+};
+
+export const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  await User.destroy({ where: { id } });
+  res.json({ message: "Deleted" });
+};

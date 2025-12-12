@@ -58,10 +58,24 @@ export const login = async(req,res) => {
 export const googleCallback = async (req, res) => {
   try {
     const user = req.user;
-    const token = generateToken(user);
+    const token = generateToken({ id: user.id });
     res.redirect(`${process.env.CLIENT_URL}/login-success?token=${token}`);
   } catch (error) {
     console.error(error);
     res.redirect(`${process.env.CLIENT_URL}/login-failed`);
+  }
+};
+
+export const getMe = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] }
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.json({ user });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
 };

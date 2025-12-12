@@ -1,0 +1,80 @@
+.upcoming {
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: #333;
+    }
+  }
+  
+  .match-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: #f7f7f7;
+    transition: 0.2s ease;
+    border: 1px solid #e5e5e5;
+  }
+  
+  .clickable {
+    cursor: pointer;
+  
+    &:hover {
+      transform: translateY(-2px);
+      background: #e6f4ff;
+      border-color: #1890ff;
+    }
+  }
+  
+  .disabled {
+    opacity: 0.9;
+  
+    &:hover {
+      background: #f7f7f7;
+      transform: none;
+      border-color: #e5e5e5;
+    }
+  }
+  
+  .teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .team {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  
+    img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+  
+    span {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+  
+  .vs {
+    font-weight: bold;
+    color: #555;
+    font-size: 18px;
+  }
+  
+  .date {
+    font-size: 15px;
+    color: #666;
+  }
+  

@@ -1,26 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import instance from "../utils/axiosInstance";
 import { message } from "antd";
 
 function LoginSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
-  interface UserToken {
-    id: number;
-    role: string;
-    username: string;
-    email: string;
-    avatar: string;
-    iat: number;
-    exp: number;
-  }
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
-    const mode = params.get("mode"); // thêm mode để phân biệt login hay verify
+    const mode = params.get("mode");
 
     if (!token) {
       message.error("Token không hợp lệ!");
@@ -28,10 +18,10 @@ function LoginSuccess() {
       return;
     }
 
-    const handleVerifyEmail = async () => {
+    const verifyEmail = async () => {
       try {
         await instance.get(`/auth/verify-email?token=${token}`);
-        message.success("Email đã được xác thực, bạn có thể đăng nhập!");
+        message.success("Email đã được xác thực!");
         navigate("/login");
       } catch (err: any) {
         message.error(err.response?.data?.message || "Liên kết không hợp lệ!");
@@ -39,27 +29,34 @@ function LoginSuccess() {
       }
     };
 
-    if (mode === "verify") {
-      handleVerifyEmail();
-    } else {
+    const loginWithGoogle = async () => {
       try {
-        const user = jwtDecode<UserToken>(token);
+        // Lưu token
         localStorage.setItem("token", token);
+
+        // Gọi backend để lấy thông tin user
+        const res = await instance.get("/auth/me");
+        const user = res.data.user;
+
         localStorage.setItem("user", JSON.stringify(user));
+
         message.success("Đăng nhập thành công!");
-        const role = user.role;
-        if(role === "admin")
-        {
-          navigate("/admin",{ replace : true });
-        }
-        else{
+
+        if (user.role === "admin") {
+          navigate("/admin", { replace: true });
+        } else {
           navigate("/", { replace: true });
         }
-
       } catch (err) {
-        message.error("Token không hợp lệ!");
+        message.error("Không lấy được thông tin người dùng!");
         navigate("/login-failed");
       }
+    };
+
+    if (mode === "verify") {
+      verifyEmail();
+    } else {
+      loginWithGoogle();
     }
   }, [navigate, location]);
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import instance from "../../utils/axiosInstance";
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
+import UpcomingMatches from "../../components/UpcomingMatches.tsx";
 
 const cx = classNames.bind(styles);
 
@@ -62,10 +63,7 @@ function Home() {
       {/* CONTENT + ADS */}
       <div className={cx("body")}>
         <div className={cx("content")}>
-          {/* NỘI DUNG CHÍNH */}
-          <h2>Chào mừng {user?.username || "bạn"}!</h2>
-          <p>Đây là nội dung chính của trang Home.</p>
-          {/* Bạn có thể thêm các component, bài viết, hoặc danh sách ở đây */}
+          <UpcomingMatches/>
         </div>
 
         <div className={cx("ads")}>
