@@ -1,7 +1,6 @@
 import models from '../models/index.js';
 const { Seat, Stadium, Section } = models;
 
-// 🧱 Lấy tất cả section của 1 sân
 export const getAllSections = async (stadiumId) => {
   return await Section.findAll({
     where: { stadiumId },
@@ -16,10 +15,9 @@ export const getAllSections = async (stadiumId) => {
   });
 };
 
-// ➕ Tạo section và sinh ghế tương ứng
 export const createSection = async (data) => {
   const { name, seatCount, price, stadiumId } = data;
-  if (!name || !seatCount || !price || !stadiumId) {
+  if (!name || seatCount == null || price == null || !stadiumId) {
     throw new Error("Thiếu dữ liệu bắt buộc!");
   }
 
@@ -36,7 +34,6 @@ export const createSection = async (data) => {
   return section;
 };
 
-// ✏️ Cập nhật section (bao gồm tên và số lượng ghế)
 export const updateSection = async (id, data) => {
   const section = await Section.findByPk(id);
   if (!section) throw new Error("Section không tồn tại!");
@@ -45,15 +42,12 @@ export const updateSection = async (id, data) => {
   const oldName = section.name;
   const oldSeatCount = section.seatCount;
 
-  // Cập nhật section
   await section.update(data);
 
-  // Nếu thay đổi số lượng ghế
   if (seatCount && seatCount !== oldSeatCount) {
     const currentSeats = await Seat.count({ where: { sectionId: id } });
 
     if (seatCount > currentSeats) {
-      // Thêm ghế mới
       const diff = seatCount - currentSeats;
       const newSeats = Array.from({ length: diff }, (_, i) => ({
         number: `${section.name}-${currentSeats + i + 1}`,
@@ -61,7 +55,6 @@ export const updateSection = async (id, data) => {
       }));
       await Seat.bulkCreate(newSeats);
     } else if (seatCount < currentSeats) {
-      // Xóa bớt ghế dư
       const diff = currentSeats - seatCount;
       const seatsToDelete = await Seat.findAll({
         where: { sectionId: section.id },
@@ -73,7 +66,6 @@ export const updateSection = async (id, data) => {
     }
   }
 
-  // Nếu đổi tên khu vực, cập nhật lại tên ghế
   if (name && name !== oldName) {
     const seats = await Seat.findAll({ where: { sectionId: section.id } });
     for (let i = 0; i < seats.length; i++) {
@@ -85,12 +77,10 @@ export const updateSection = async (id, data) => {
   return section;
 };
 
-// ❌ Xóa section (ghế sẽ tự động xóa do CASCADE)
 export const deleteSection = async (id) => {
   const section = await Section.findByPk(id);
   if (!section) throw new Error("Section không tồn tại!");
 
-  // Không cần gọi Seat.destroy() nữa
   await section.destroy();
 
   return { message: "Đã xóa khu vực và tất cả ghế liên quan." };

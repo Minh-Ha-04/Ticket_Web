@@ -1,7 +1,7 @@
 import express from "express";
 import * as authController from "../controllers/authController.js";
-import { verifyToken } from "../utils/jwt.js";
 import passport from "passport";
+import { auth } from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -25,6 +25,6 @@ router.get(
   authController.googleCallback
 );
 
-router.get("/me", verifyToken, authController.getMe);
+router.get("/me", auth(), authController.getMe);
 
 export default router;

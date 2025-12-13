@@ -13,10 +13,10 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => 
+    {
       try {
         const email = profile.emails[0].value;
-        const avatar = profile.photos[0].value;
 
         let user = await User.findOne({ where: { email } });
 
@@ -24,14 +24,12 @@ passport.use(
           user = await User.create({
             username: profile.displayName,
             email,
-            password: "", // Google user không có password
+            password: "",
             role: "user",
-            avatar,
-            isActive: true, // Google xác thực -> tự động kích hoạt
+            isActive: true,
           });
         } else if (!user.isActive) {
           user.isActive = true;
-          user.avatar = avatar;
           await user.save();
         }
 

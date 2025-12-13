@@ -10,12 +10,12 @@ export const register = async(req,res)=>{
     const {username,email,password} = req.body;
 
     if(!username||!email||!password){
-      return res.status(400).json({message :"Please enter complete information!!"});
+      return res.status(400).json({message :"Hãy điền đầy đủ thông tin !!"});
     }
     const newUser = await authService.register(username,email,password);
     const {password:_, ...userData} = newUser.dataValues;
     return res.status(201).json({
-      message:"Register sucessfully",
+      message:"Đăng kí thành công",
       user :userData,
     })
   }
@@ -72,7 +72,7 @@ export const getMe = async (req, res) => {
       attributes: { exclude: ['password'] }
     });
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
     return res.json({ user });
   } catch (err) {

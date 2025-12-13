@@ -8,7 +8,7 @@ const {User} = models;
 
 export const register = async (username, email, password) => {
     const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) throw new Error("Email already exists");
+    if (existingUser) throw new Error("Email đã tồn tại ");
   
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -42,23 +42,26 @@ export const login = async(username, password) => {
     });
 
     if(!user) {
-        throw new Error("User don't exist");
+        throw new Error("Tài khoản không tồn tại");
     }
 
+    if (!user.isActive) {
+        throw new Error("Tài khoản đã bị khóa");
+      }
     const isPass = await bcrypt.compare(password,user.password);
     if(!isPass) {
-        throw new Error("Incorrect password");
+        throw new Error("Sai mật khẩu");
     }
 
     if(user.isActive ===false )
     {
-        throw new Error("Account is locked or not activated ");
+        throw new Error("Tài khoản bị khóa hoặc chưa kích hoạt");
     }
 
     const token = generateToken(user);
 
     return {
-        message : "Login successfully ",
+        message : "Đăng nhập thành công",
         user : {
             id : user.id,
             username : user.username,

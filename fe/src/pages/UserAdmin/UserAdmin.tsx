@@ -42,7 +42,7 @@ function UserAdmin() {
   };
 
   const handleDelete = async (id: number) => {
-    await instance.delete(`/users/${id}`);
+    await instance.delete(`/profile/${id}`);
     message.success("Xóa thành công");
     loadUsers();
   };
@@ -52,11 +52,11 @@ function UserAdmin() {
 
     if (editingUser) {
       // UPDATE
-      await instance.put(`/users/${editingUser.id}`, values);
+      await instance.put(`/profile/${editingUser.id}`, values);
       message.success("Cập nhật thành công");
     } else {
       // CREATE
-      await instance.post("/users", values);
+      await instance.post("/profile", values);
       message.success("Thêm mới thành công");
     }
 

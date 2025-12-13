@@ -12,6 +12,7 @@ const Payment = sequelize.define("Payment", {
     discountId : {type: DataTypes.INTEGER, allowNull:true}
 }, {
     timestamps: true,
+    paranoid:true,
 });
 
 Payment.associate = (models) => {

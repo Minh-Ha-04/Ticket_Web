@@ -24,59 +24,61 @@ export const getBookingById = async(id) =>{
 
 
 export const getBookingByUserId = async (userId) => {
-    const booking = await Booking.findAll({
-        where: { 
-            userId,
-            status: "confirmed"
-        },
-        include: [
-            { 
-                model: Ticket,
-                as: "tickets",
-                attributes: ["id", "seatId", "price", "status", "holdExpiresAt"],
-                
-                include: [
-                    { model: Seat, as: "seat", attributes: ["id", "number"] },
-
-                    {
-                        model: Match,
-                        as: "match",
-                        attributes: ["id", "matchDate"],
-
-                        include: [
-                            {
-                                model: Team,
-                                as: "homeTeam",
-                                attributes: ["id", "name", "logo", "shortname"]
-                            },
-                            {
-                                model: Team,
-                                as: "awayTeam",
-                                attributes: ["id", "name", "logo", "shortname"]
-                            },
-                            {
-                                model: Stadium,
-                                attributes: ["id", "name"]
-                            }
-                        ]
-                    }
-                ]
+    return await Booking.findAll({
+      where: {
+        userId,
+        status: "confirmed",
+      },
+      include: [
+        {
+          model: Ticket,
+          as: "tickets",
+          attributes: [
+            "id",
+            "seatId",
+            "price",
+            "status",
+            "holdExpiresAt",
+          ],
+          include: [
+            {
+              model: Seat,
+              as: "seat",
+              attributes: ["id", "number"],
             },
-
-            { 
-                model: User,
-                as: "user",
-                attributes: ["id", "username", "email"]
-            }
-        ],
+            {
+              model: Match,
+              as: "match",
+              attributes: ["id", "matchDate"],
+              include: [
+                {
+                  model: Team,
+                  as: "homeTeam",
+                  attributes: ["id", "name", "logo", "shortname"],
+                },
+                {
+                  model: Team,
+                  as: "awayTeam",
+                  attributes: ["id", "name", "logo", "shortname"],
+                },
+                {
+                  model: Stadium,
+                  attributes: ["id", "name"],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "username", "email"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
     });
-
-    if (!booking || booking.length === 0) {
-        throw new Error("Không tìm thấy đơn đặt vé.");
-    }
-    return booking;
-};
-
+  };
+  
 
 
 export const createBooking = async (userId, ticketIds) =>{
@@ -120,15 +122,10 @@ export const deleteBooking = async( id) =>{
         const booking = await Booking.findByPk( id, {transaction : t});
         if(!booking) throw new Error("Không tìm thấy booking.");
 
-        if (booking.status !== "pending") {
-            throw new Error("Chỉ có thể xóa đơn chưa thanh toán.");
-        }
-
         await Ticket.update(
             {status : "available",bookingId : null},
             {where : { bookingId : id }, transaction : t }
         )
-
         await booking.destroy({transaction : t});
         return {message: "Đã xóa booking và hoàn vé."};
     })

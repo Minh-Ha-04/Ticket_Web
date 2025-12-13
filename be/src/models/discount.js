@@ -1,50 +1,31 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-const Discount = sequelize.define(
-  "Discount",
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    discountType: {
-      type: DataTypes.ENUM("percent", "amount"),
-      allowNull: false,
-    },
-    value: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    maxUsage: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0,
-    },
-    usedCount: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-    },
-    matchId : {
-      type : DataTypes.INTEGER,
-      allowNull : true,
-    }
+const Discount = sequelize.define("Discount", {
+  code: DataTypes.STRING,
+  discountType: DataTypes.ENUM("percent", "amount"),
+  value: DataTypes.FLOAT,
+  maxUsage: DataTypes.INTEGER,
+  usedCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
   },
-  {
-    timestamps: true,
-  }
-);
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  matchId: DataTypes.INTEGER,
+}, {
+  paranoid: true,
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ["code", "matchId"],
+    },
+  ],
+});
+
 
 Discount.associate = (models) => {
   Discount.hasMany(models.Payment, {

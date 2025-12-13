@@ -14,20 +14,28 @@ export const getBookingById = async(req,res)=>{
 
 export const getBookingByUserId = async (req, res) => {
     try {
-        const { userId } = req.params;
-        const booking = await bookingService.getBookingByUserId(userId);
-        res.json({ status: "success", data: booking });
+      const userId = req.user.id; 
+      const bookings = await bookingService.getBookingByUserId(userId);
+      res.json({
+        status: "success",
+        data: bookings,
+      });
     } catch (error) {
-        res.status(404).json({ message: error.message });
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
-};
+  };
+  
 export const createBooking = async (req,res)=>{
     
     try {
-        const {userId, ticketIds, matchId} = req.body;
+        const userId = req.user.id;
+        const {ticketIds} = req.body;
         if( !userId || !ticketIds || !Array.isArray(ticketIds) )
         {
-            return res.status(400).json({ message: "Thiếu dữ liệu userId, ticketIds hoặc matchId." });
+            return res.status(400).json({ message: "Thiếu dữ liệu userId hoặc ticketIds " });
         }
         const booking =  await bookingService.createBooking(userId,ticketIds);
         res.status(201).json({

@@ -1,15 +1,15 @@
 import * as pictureController from "../controllers/pictureController.js";
-
+import { auth } from "../middlewares/auth.js";
 import upload  from "../middlewares/upload.js";
 import express from "express";
 
 const route = express.Router();
 
-route.post("/", upload.single("image"), pictureController.createPicture);
+route.post("/",auth(['admin']), upload.single("image"), pictureController.createPicture);
 
-route.put("/:id", upload.single("image"), pictureController.updatePicture);
+route.put("/:id",auth(['admin']), upload.single("image"), pictureController.updatePicture);
 
-route.delete("/:id", pictureController.deletePicture);
+route.delete("/:id",auth(['admin']), pictureController.deletePicture);
 
 route.get("/",pictureController.getPictures);
 

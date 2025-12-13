@@ -1,17 +1,17 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
+import { auth } from "../middlewares/auth.js";
 
-import { authMiddleware } from "../utils/jwt.js";
 
 
 const router = express.Router();
 
-router.get("/", authMiddleware, userController.getProfile);
-router.put("/update", authMiddleware, userController.updateProfile);
-router.put("/change-password", authMiddleware, userController.changePassword);
+router.get("/", auth(), userController.getProfile);
+router.put("/update", auth(), userController.updateProfile);
+router.put("/change-password", auth(), userController.changePassword);
 
-router.get("/all", userController.getUsers);
-router.post("/", userController.createUser);
-router.put("/:id", userController.updateUser);
-router.delete("/:id", userController.deleteUser);
+router.get("/all",auth(['admin']), userController.getUsers);
+router.post("/",auth(['admin']), userController.createUser);
+router.put("/:id",auth(['admin']), userController.updateUser);
+router.delete("/:id",auth(['admin']), userController.deleteUser);
 export default router;

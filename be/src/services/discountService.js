@@ -1,4 +1,4 @@
-import models from "../models/index.js";
+import models, { sequelize } from "../models/index.js";
 import { Op, col } from "sequelize";
 const {Discount} = models;
 
@@ -6,12 +6,12 @@ export const createDiscount = async (data) => {
 
       const { code, discountType, value, maxUsage, isActive, matchId } = data;
       if (!code || !value || !matchId) {
-        return res.status(400).json({ message: "Thiếu thông tin mã giảm giá" });
+        throw new Error("Thiếu thông tin mã giảm giá");
       }
   
       const existing = await Discount.findOne({ where: { code } });
       if (existing) {
-        return res.status(400).json({ message: "Mã giảm giá đã tồn tại" });
+        throw new Error("Mã giảm giá đã tồn tại ")
       }
   
       const discount = await Discount.create({
@@ -26,7 +26,7 @@ export const createDiscount = async (data) => {
   };
   
 export const deleteDiscount = async (id) => {
-    const discount = await Discount.findByPk(id); // cần await
+    const discount = await Discount.findByPk(id);
     if (!discount) throw new Error("Mã giảm giá không tồn tại");
     return await discount.destroy();
 };
@@ -45,15 +45,22 @@ export const validateDiscount = async (code , matchId) => {
       },
   });
 
-  if (!discount) return null;
+  if (!discount) throw new Error("Mã giảm giá không hợp lệ hoặc đã hết lượt áp dụng");
   return discount;
 };
 
-export const incrementUsage = async (discountId) => {
-    const discount = await Discount.findByPk(discountId);
-    if (discount) {
-      discount.usedCount += 1;
-      await discount.save();
+export const incrementUsage = async (discountId) =>{
+  return await sequelize.transaction(async (t) => {
+    const discount = await Discount.findByPk(discountId,{
+      lock : true,
+      transaction : t,
+    });
+    if (!discount) throw new Error("Không tồn tại discount này");
+    if(discount.usedCount >= discount.maxUsage ) {
+      throw new Error ("Mã giảm giá hết lượt ");
     }
+
+    discount.usedCount +=1;
+    await discount.save({transaction : t});
+  });
 };
-  

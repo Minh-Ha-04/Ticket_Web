@@ -49,8 +49,8 @@ export const creatMatch = async(req,res)=>{
 export const updateMatch = async(req,res)=>{
     try {
         const {id} = req.params;
-        const {homeTeamId,awayTeamId,matchDate,stadiumId} = req.body;
-        const match = await matchService.updateMatch(id,{homeTeamId,awayTeamId,matchDate,stadiumId});
+        const {homeTeamId,awayTeamId,matchDate,stadiumId, status} = req.body;
+        const match = await matchService.updateMatch(id,{homeTeamId,awayTeamId,matchDate,stadiumId,status});
         res.status(201).json(match);
     }
     catch(err)
@@ -59,10 +59,10 @@ export const updateMatch = async(req,res)=>{
     }
 }
 
-export const deleteMatch = async(req,res)=>{
+export const cancelMatch = async(req,res)=>{
     try{
         const {id} = req.params;
-        await matchService.deleteMatch(id);
+        await matchService.cancelMatch(id);
         res.json({message:"Delete Match Successfully"});
     }
     catch(err)

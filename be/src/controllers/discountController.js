@@ -4,7 +4,7 @@ export const createDiscount = async(req,res)=>{
 
     try {
         const discount = await discountService.createDiscount(req.body); 
-        res.json(discount);
+        res.status(201).json(discount);
     }
     catch(error)
     {

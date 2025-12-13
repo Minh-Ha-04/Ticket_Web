@@ -11,6 +11,7 @@ const Invoice = sequelize.define("Invoice", {
     bookingId : { type: DataTypes.INTEGER, allowNull: false}
 }, {
     timestamps: true,
+    paranoid: true, 
 });
 
 Invoice.associations = (models) => {

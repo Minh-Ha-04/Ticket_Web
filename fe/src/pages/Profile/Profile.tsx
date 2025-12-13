@@ -59,7 +59,7 @@ function Profile() {
 
   const fetchBookingHistory = async (id: number) => {
     try {
-      const res = await instance.get(`/bookings/user/${id}`);
+      const res = await instance.get(`/bookings/my`);
   
       const formatted = res.data.data.map((bk: any) => {
         const firstTicket = bk.tickets[0];

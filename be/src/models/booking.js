@@ -11,6 +11,7 @@ const Booking = sequelize.define("Booking", {
     matchId : { type: DataTypes.INTEGER, allowNull: false },
 }, {
     timestamps: true,
+    paranoid: true,
 });
 
 Booking.associate = (models) => {

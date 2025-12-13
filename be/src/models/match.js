@@ -8,11 +8,18 @@ const Match = sequelize.define("Match", {
     awayTeamId: { type: DataTypes.INTEGER, allowNull: false },
     matchDate: { type: DataTypes.DATE, allowNull: false },
     stadiumId: { type: DataTypes.INTEGER, allowNull: false },
+    status: {
+        type: DataTypes.ENUM('upcoming','ongoing','finished','canceled'
+        ),
+        allowNull: false,
+        defaultValue: 'upcoming',
+      },
     isTicketCreated: {type :DataTypes.BOOLEAN,allowNull :false,defaultValue:false},
     poster: { type: DataTypes.STRING, allowNull: true },
     posterPublicId : {type :DataTypes.STRING, allowNull :true}
 }, {
     timestamps: true,
+    paranoid : true,
 });
 
 Match.associate = (models) => {

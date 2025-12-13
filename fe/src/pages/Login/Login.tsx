@@ -16,7 +16,6 @@ interface FormData {
 
 function Login() {
   const [isRegister, setIsRegister] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
@@ -42,50 +41,44 @@ function Login() {
     }
 
     try {
-      setLoading(true);
-
       if (isRegister) {
         if (!formData.email) {
           message.error("Vui lòng nhập email!");
-          setLoading(false);
           return;
         }
         if (formData.password !== formData.confirmPassword) {
           message.error("Mật khẩu xác nhận không khớp!");
-          setLoading(false);
           return;
         }
-
+      
         await instance.post("/auth/register", {
           username: formData.username,
           email: formData.email,
           password: formData.password,
         });
-
-        alert("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
+      
+        message.success("Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
         setIsRegister(false);
       } else {
         const res = await instance.post("/auth/login", {
           username: formData.username,
           password: formData.password,
         });
-
+      
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-
-        alert("Đăng nhập thành công!");
+      
+        message.success("Đăng nhập thành công!");
+      
         const role = res.data.user.role;
-        console.log(res.data.user.role);
         if (role === "admin") {
           navigate("/admin");
         } else {
           navigate("/");
         }
-            }
+      }      
     } catch (err: any) {
-      message.error(err.response?.data?.message || "Có lỗi xảy ra!");
-    } finally {
-      setLoading(false);
+      message.error("Sai tài khoản hoặc mật khẩu!");
     }
   };
 
@@ -109,7 +102,6 @@ function Login() {
       </header>
 
       <div className={cx("content")}>
-        <Spin spinning={loading} tip="Đang xử lý...">
           <form className={cx("form")} onSubmit={handleSubmit}>
             <div className={cx("form-group")}>
               <label>Tên đăng nhập</label>
@@ -179,7 +171,6 @@ function Login() {
               )}
             </div>
           </form>
-        </Spin>
 
         <div className={cx("login-google")}>
           <Button type="default" onClick={handleGoogleLogin} block size="large">

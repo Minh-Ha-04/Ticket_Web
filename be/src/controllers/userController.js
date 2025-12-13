@@ -58,7 +58,10 @@ export const changePassword = async (req, res) => {
 
 
 export const getUsers = async (req, res) => {
-  const users = await User.findAll();
+  const users = await User.findAll({
+    where: { isActive: true },
+    attributes: { exclude: ["password"] }
+  });  
   res.json(users);
 };
 
@@ -86,7 +89,22 @@ export const updateUser = async (req, res) => {
 };
 
 export const deleteUser = async (req, res) => {
-  const { id } = req.params;
-  await User.destroy({ where: { id } });
-  res.json({ message: "Deleted" });
-};
+    try {
+      const { id } = req.params;
+  
+      const user = await User.findByPk(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      await User.update(
+        { isActive: false },
+        { where: { id } }
+      );
+  
+      res.json({ message: "User deactivated" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  };
+  

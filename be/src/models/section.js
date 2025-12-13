@@ -12,6 +12,7 @@ const Section = sequelize.define(
   },
   {
     timestamps: true,
+    paranoid:true,
   }
 );
 
