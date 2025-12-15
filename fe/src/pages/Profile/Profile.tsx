@@ -57,21 +57,24 @@ function Profile() {
     }
   };
 
-  const fetchBookingHistory = async (id: number) => {
+  const fetchBookingHistory = async () => {
     try {
       const res = await instance.get(`/bookings/my`);
   
-      const formatted = res.data.data.map((bk: any) => {
-        const firstTicket = bk.tickets[0];
+      const paidBookings = res.data.data.filter((bk: any) => bk.status === "paid");
   
-        const match = firstTicket?.match;
+      const formatted = paidBookings.map((bk: any) => {
+        const firstTicket = bk.tickets[0];
+        const sectionMatch = firstTicket?.sectionMatch;
+        const match = sectionMatch?.match;
   
         const matchName = `${match.homeTeam.name} vs ${match.awayTeam.name}`;
+        const seat = bk.tickets.map((t: any) => t.sectionMatch?.section?.name).join(", ");
   
         return {
           id: bk.id,
           matchName,
-          seat: bk.tickets.map((t: any) => t.seat.number).join(", "),
+          seat,
           totalPrice: bk.totalPrice,
           createdAt: bk.createdAt,
           poster: match?.poster || null,
@@ -81,17 +84,18 @@ function Profile() {
       });
   
       setBookingHistory(formatted);
-    } catch {}
+    } catch (error) {
+      console.error(error);
+    }
   };
   
-
   useEffect(() => {
     fetchProfile();
   }, []);
 
   useEffect(() => {
-    if (userId) fetchBookingHistory(userId);
-  }, [userId]);
+    fetchBookingHistory();
+  }, []);
   
 
   const handleUpdate = async () => {
@@ -223,7 +227,7 @@ function Profile() {
               </div>
 
               <div className={cx("match-info")}>
-                <p><b>Ghế:</b> {item.seat}</p>
+                <p><b>Khu:</b> {item.seat}</p>
                 <p><b>Giá:</b> {item.totalPrice.toLocaleString()} VND</p>
                 <p><b>Sân vận động:</b> {item.stadium}</p>
               </div>

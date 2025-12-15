@@ -8,19 +8,17 @@ function PaymentSuccess() {
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    const resultCode = searchParams.get("resultCode");
     const orderId = searchParams.get("orderId");
-
-    if (resultCode === "0") {
-      setStatus("success");
-      instance
-        .get(`/pays/confirm?orderId=${orderId}`)
-        .then(() => console.log(" Đã xác nhận thanh toán thành công"))
-        .catch((err) => console.error(" Lỗi xác nhận:", err));
-    } else {
-      setStatus("fail");
-    }
+    if (!orderId) return setStatus("fail");
+  
+    instance.get(`/pays/status?orderId=${orderId}`)
+      .then(res => {
+        if (res.data.status === "completed") setStatus("success");
+        else setStatus("fail");
+      })
+      .catch(err => setStatus("fail"));
   }, [searchParams]);
+  
 
   return (
     <div style={{ textAlign: "center", marginTop: "80px" }}>

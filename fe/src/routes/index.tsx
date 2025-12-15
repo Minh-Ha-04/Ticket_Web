@@ -9,7 +9,7 @@
     import Ticket from "../pages/Tickets";
     import Calendar from "../pages/Calendar";
     import Login from "../pages/Login/Login";
-    import TicketBooking from "../pages/TicketBooking/TicketBooking";
+    import Booking from "../pages/Booking/Booking";
     import Payment from "../pages/Payment";
     
 
@@ -38,7 +38,7 @@
                 {path : "/calendar",element :<Calendar/>},
 
                 {path: "/ticket", element: <Ticket />},
-                {path: "/ticket/:matchId",element : <TicketBooking/>},
+                {path: "/ticket/:matchId",element : <Booking/>},
                 {path: "/payment/:bookingId" , element :<Payment/>},
                 {path: "/payment-success",element : <PaymentSuccess/>}
             ]

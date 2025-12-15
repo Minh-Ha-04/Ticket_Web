@@ -14,7 +14,6 @@ const Match = sequelize.define("Match", {
         allowNull: false,
         defaultValue: 'upcoming',
       },
-    isTicketCreated: {type :DataTypes.BOOLEAN,allowNull :false,defaultValue:false},
     poster: { type: DataTypes.STRING, allowNull: true },
     posterPublicId : {type :DataTypes.STRING, allowNull :true}
 }, {
@@ -26,8 +25,12 @@ Match.associate = (models) => {
     Match.belongsTo(models.Team, { as: 'homeTeam', foreignKey: 'homeTeamId' });
     Match.belongsTo(models.Team, { as: 'awayTeam', foreignKey: 'awayTeamId' });
     Match.belongsTo(models.Stadium, { foreignKey: 'stadiumId' });
-    Match.hasMany(models.Ticket, { foreignKey: 'matchId', as: 'tickets' });
     Match.hasMany(models.Discount, {foreignKey : 'matchId', as: 'discounts'});
+    Match.hasMany(models.SectionMatch, {
+        foreignKey: 'matchId',
+        as: 'sectionMatches',
+        onDelete: 'CASCADE',
+      });
 };
 
 export default Match;

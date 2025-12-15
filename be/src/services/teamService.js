@@ -10,7 +10,7 @@ export const updateTeam = async (id,teamData) =>
     const team = await Team.findByPk(id);
     if(!team)
     {
-        throw new Error("Not found Team!!");
+        throw new Error("Không tìm thấy đội");
     }
     return await team.update(teamData);
 }
@@ -20,7 +20,7 @@ export const deleteTeam = async(id) =>
     const team = await Team.findByPk(id);
     if(!team)
     {
-        throw new Error("Not found Team!!");
+        throw new Error("Không tìm thấy đội");
     }
     return await team.destroy();
 }

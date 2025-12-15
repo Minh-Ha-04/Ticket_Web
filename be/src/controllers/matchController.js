@@ -11,17 +11,6 @@ export const getAllMatches = async(req,res)=>{
     }
 }
 
-export const getMatchAtHome = async(req,res)=>{
-    try {
-        const matches = await matchService.getMatchAtHome();
-        res.json(matches);
-    }
-    catch(err)
-    {
-        res.status(500).json({message : err.message});
-    }
-}
-
 export const getMatchById = async(req,res)=>{
     try{
         const {id}= req.params;
@@ -34,17 +23,17 @@ export const getMatchById = async(req,res)=>{
     }
 }
 
-export const creatMatch = async(req,res)=>{
-    try{
-        const {homeTeamId,awayTeamId,matchDate,stadiumId}= req.body;
-        const match = await matchService.createMatch({homeTeamId,awayTeamId,matchDate,stadiumId});
-        res.status(201).json(match);
+    export const creatMatch = async(req,res)=>{
+        try{
+            const {homeTeamId,awayTeamId,matchDate,stadiumId}= req.body;
+            const match = await matchService.createMatch({homeTeamId,awayTeamId,matchDate,stadiumId});
+            res.status(201).json(match);
+        }
+        catch(err)
+        {
+            res.status(500).json({message : err.message});
+        }
     }
-    catch(err)
-    {
-        res.status(500).json({message : err.message});
-    }
-}
 
 export const updateMatch = async(req,res)=>{
     try {

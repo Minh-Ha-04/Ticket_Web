@@ -1,16 +1,16 @@
 import crypto from "crypto";
 import https from "https";
 import querystring from "qs";
-
-
+import dotenv from "dotenv";
+dotenv.config();
 // ================= MoMo ==================
 export const createMomoPayment = async (amount, orderInfo,orderId) => {
     const partnerCode = "MOMO";
-    const accessKey = "F8BBA842ECF85";
-    const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
+    const accessKey = process.env.MOMO_ACCESS_KEY;
+    const secretKey = process.env.MOMO_SECRET_KEY;    
     const requestId = orderId
-    const redirectUrl = "http://localhost:3000/payment-success";
-    const ipnUrl = "http://localhost:5000/api/pays/momo-ipn";
+    const redirectUrl = `http://localhost:3000/payment-success?orderId=${orderId}`;
+    const ipnUrl = "https://prehostile-earthen-willette.ngrok-free.dev/api/pays/momo-ipn";
     const requestType = "captureWallet";
     const extraData = "";
   

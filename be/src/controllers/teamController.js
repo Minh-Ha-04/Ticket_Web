@@ -1,4 +1,3 @@
-// controllers/teamController.ts
 import * as teamService from "../services/teamService.js";
 import cloudinary from "../utils/cloudinary.js";
 
@@ -14,12 +13,9 @@ export const createTeam = async (req, res) => {
       logo: file?.path || null,
       logoPublicId: file?.filename || null
     });
-
-    console.log("TEAM CREATED:", team);
     res.status(201).json(team);
   } catch (error) {
-    console.error("🔥 ERROR createTeam:", error);
-    res.status(500).json({ message: error.message || "Create team failed" });
+    res.status(500).json({ message: error.message || "Tạo thất bại" });
   }
 };
 
@@ -29,7 +25,7 @@ export const updateTeam = async (req, res) => {
     const id = req.params.id;
     const team = await teamService.getTeamById(id);
     if (!team) {
-      return res.status(404).json({ message: "Team not found" });
+      return res.status(404).json({ message: "Không tìm thấy đội" });
     }
 
     const file = req.file;
@@ -44,12 +40,9 @@ export const updateTeam = async (req, res) => {
     };
 
     const updatedTeam = await teamService.updateTeam(id, updateData);
-
-    console.log("TEAM UPDATED:", updatedTeam);
     res.json(updatedTeam);
   } catch (error) {
-    console.error("🔥 ERROR updateTeam:", error);
-    res.status(500).json({ message: error.message || "Update team failed" });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -58,19 +51,14 @@ export const deleteTeam = async (req, res) => {
   try {
     const id = req.params.id;
     const team = await teamService.getTeamById(id);
-    if (!team) return res.status(404).json({ message: "Team not found" });
-
-
+    if (!team) return res.status(404).json({ message: "Không tìm thấy đội" });
     if (team.logoPublicId) {
       await cloudinary.uploader.destroy(team.logoPublicId);
     }
-
     await teamService.deleteTeam(id);
-    console.log("TEAM DELETED:", id);
-    res.json({ message: "Team deleted successfully" });
+    res.json({ message: "Xóa đội thành công" });
   } catch (error) {
-    console.error("🔥 ERROR deleteTeam:", error);
-    res.status(500).json({ message: error.message || "Delete team failed" });
+    res.status(500).json({ message: error.message || "Xóa đội thất bại" });
   }
 };
 
@@ -82,8 +70,7 @@ export const getAllTeams = async (req, res) => {
     const result = await teamService.getAllTeams(page, pageSize);
     res.json(result);
   } catch (error) {
-    console.error(" ERROR getAllTeams:", error);
-    res.status(500).json({ message: error.message || "Get teams failed" });
+    res.status(500).json({ message: error.message || "Lấy các đội thất bại" });
   }
 };
 
@@ -91,10 +78,9 @@ export const getTeamById = async (req, res) => {
     try {
       const id = req.params.id;
       const team = await teamService.getTeamById(id);
-      if (!team) return res.status(404).json({ message: "Team not found" });
+      if (!team) return res.status(404).json({ message: "Không tìm thấy đội" });
       res.json(team);
     } catch (error) {
-      console.error("🔥 ERROR getTeamById:", error);
-      res.status(500).json({ message: error.message || "Get team failed" });
+      res.status(500).json({ message: error.message || "Lấy các đội thất bại" });
     }
 };

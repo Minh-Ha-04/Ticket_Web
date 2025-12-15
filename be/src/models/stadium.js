@@ -1,7 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-import Section from "./section.js";
 
 const Stadium = sequelize.define("Stadium", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -13,8 +12,17 @@ const Stadium = sequelize.define("Stadium", {
     timestamps: true,
 });
 
-Stadium.associte = (models) => {
-    Stadium.hasMany(models.Section,{foreignKey : 'stadiumId',as:'sections'});
-};
+Stadium.associate = (models) => {
+    Stadium.hasMany(models.Section, {
+      foreignKey: 'stadiumId',
+      as: 'sections'
+    });
+  
+    Stadium.hasMany(models.Match, {
+      foreignKey: 'stadiumId',
+      as: 'matches'
+    });
+  };
+  
 
 export default Stadium;

@@ -94,17 +94,16 @@ function MatchAdmin() {
 
   const handleSubmit = async (values: any) => {
     try {
+      console.log("Form values:", values);
       const payload = {
         ...values,
         matchDate: values.matchDate.format("YYYY-MM-DD HH:mm:ss"),
       };
+      console.log(payload);
       if (editingMatch) {
-        console.log(payload);
         await instance.put(`/matches/${editingMatch.id}`, payload);
-        alert("Cập nhật trận đấu thành công!");
       } else {
         await instance.post("/matches", payload);
-        alert("Thêm trận đấu mới thành công!");
       }
 
       setIsModalVisible(false);
@@ -113,7 +112,7 @@ function MatchAdmin() {
       fetchAll();
     } catch (err) {
       console.error(err);
-      message.error("❌ Thao tác thất bại!");
+      message.error(" Thao tác thất bại!");
     }
   };
 
@@ -127,11 +126,9 @@ function MatchAdmin() {
     if (!deleteId) return;
     try {
       await instance.delete(`/matches/${deleteId}`);
-      alert("🗑️ Xóa trận đấu thành công!");
       fetchAll();
     } catch (err) {
       console.error(err);
-      alert("❌ Xóa thất bại!");
     } finally {
       setDeleteId(null);  
       setIsModalVisible(false);

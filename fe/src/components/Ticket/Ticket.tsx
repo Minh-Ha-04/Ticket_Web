@@ -17,7 +17,6 @@ interface TicketProps {
     matchDate: string;
     homeTeam: Team;
     awayTeam: Team;
-    isTicketCreated: boolean;
     minPrice: number;
   };
 }
@@ -35,18 +34,15 @@ function Ticket({ match }: TicketProps) {
   });
 
   const Wrapper = ({ children }: { children: React.ReactNode }) => {
-    return match.isTicketCreated ? (
+    return  (
       <Link to={`/ticket/${match.id}`} className={cx("link")}>
         {children}
       </Link>
-    ) : (
-      <div className={cx("link-disabled")}>{children}</div>
-    );
+    )
   };
-
   return (
     <Wrapper>
-      <div className={cx("wrapper", { disabled: !match.isTicketCreated })}>
+      <div className={cx("wrapper")}>
         <img src={match.poster} alt="Match Poster" className={cx("poster")} />
         <div className={cx("content")}>
           <div className={cx("teams")}>
@@ -62,7 +58,7 @@ function Ticket({ match }: TicketProps) {
           </div>
 
           <div className={cx("price")}>
-            {match.minPrice ? (
+            {match.minPrice !== null && match.minPrice !== undefined ? (
               <>
                 Giá vé chỉ từ{" "}
                 <span className={cx("price-value")}>

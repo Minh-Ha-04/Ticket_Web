@@ -32,7 +32,7 @@ function Tickets(){
 
   const fetchMatches = async () => {
     try {
-      const res = await instance.get("/matches/home");
+      const res = await instance.get("/matches");
       setMatches(res.data);
       console.log(res.data);
     } catch (err) {

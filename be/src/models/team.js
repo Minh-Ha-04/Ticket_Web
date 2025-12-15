@@ -1,7 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
-import Stadium from "./stadium.js";
 
 const Team = sequelize.define("Team", {
     id : { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -14,9 +13,12 @@ const Team = sequelize.define("Team", {
     timestamps: true,
 });
 
-Team.associations = (models) => {
-    Team.belongsTo(Stadium,{foreignKey : 'stadiumId'});
-};
-
+Team.associate = (models) => {
+    Team.belongsTo(models.Stadium, {
+      foreignKey: 'stadiumId',
+      as: 'stadium'
+    });
+  };
+  
 
 export default Team;

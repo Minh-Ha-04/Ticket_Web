@@ -1,5 +1,5 @@
-import models from '../models/index.js';
-const { Seat, Stadium, Section } = models;
+import models from "../models/index.js";
+const { Section, Stadium } = models;
 
 export const getAllSections = async (stadiumId) => {
   return await Section.findAll({
@@ -8,7 +8,7 @@ export const getAllSections = async (stadiumId) => {
       {
         model: Stadium,
         as: "stadium",
-        attributes: ["name"],
+        attributes: ["id", "name"],
       },
     ],
     order: [["name", "ASC"]],
@@ -16,72 +16,30 @@ export const getAllSections = async (stadiumId) => {
 };
 
 export const createSection = async (data) => {
-  const { name, seatCount, price, stadiumId } = data;
-  if (!name || seatCount == null || price == null || !stadiumId) {
-    throw new Error("Thiếu dữ liệu bắt buộc!");
+  const { name, stadiumId } = data;
+
+  if (!name || !stadiumId) {
+    throw new Error("Thiếu name hoặc stadiumId");
   }
 
-  // Tạo section
-  const section = await Section.create({ name, seatCount, price, stadiumId });
-
-  // Tạo ghế cho section
-  const seats = Array.from({ length: seatCount }, (_, i) => ({
-    number: `${name}-${i + 1}`,
-    sectionId: section.id,
-  }));
-  await Seat.bulkCreate(seats);
-
-  return section;
+  return await Section.create({ name, stadiumId });
 };
 
 export const updateSection = async (id, data) => {
   const section = await Section.findByPk(id);
-  if (!section) throw new Error("Section không tồn tại!");
+  if (!section) throw new Error("Section không tồn tại");
 
-  const { name, seatCount } = data;
-  const oldName = section.name;
-  const oldSeatCount = section.seatCount;
-
-  await section.update(data);
-
-  if (seatCount && seatCount !== oldSeatCount) {
-    const currentSeats = await Seat.count({ where: { sectionId: id } });
-
-    if (seatCount > currentSeats) {
-      const diff = seatCount - currentSeats;
-      const newSeats = Array.from({ length: diff }, (_, i) => ({
-        number: `${section.name}-${currentSeats + i + 1}`,
-        sectionId: section.id,
-      }));
-      await Seat.bulkCreate(newSeats);
-    } else if (seatCount < currentSeats) {
-      const diff = currentSeats - seatCount;
-      const seatsToDelete = await Seat.findAll({
-        where: { sectionId: section.id },
-        order: [["id", "DESC"]],
-        limit: diff,
-      });
-      const seatIds = seatsToDelete.map((s) => s.id);
-      await Seat.destroy({ where: { id: seatIds } });
-    }
-  }
-
-  if (name && name !== oldName) {
-    const seats = await Seat.findAll({ where: { sectionId: section.id } });
-    for (let i = 0; i < seats.length; i++) {
-      seats[i].number = `${name}-${i + 1}`;
-      await seats[i].save();
-    }
-  }
+  await section.update({
+    name: data.name ?? section.name,
+  });
 
   return section;
 };
 
 export const deleteSection = async (id) => {
   const section = await Section.findByPk(id);
-  if (!section) throw new Error("Section không tồn tại!");
+  if (!section) throw new Error("Section không tồn tại");
 
   await section.destroy();
-
-  return { message: "Đã xóa khu vực và tất cả ghế liên quan." };
+  return { message: "Đã xóa khu vực" };
 };

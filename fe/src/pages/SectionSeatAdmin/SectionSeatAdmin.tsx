@@ -43,7 +43,8 @@ function SectionSeatAdmin() {
   const fetchSections = async () => {
     try {
       const res = await instance.get(`/sections/stadium/${stadiumId}`);
-      setSections(res.data.sections);
+      console.log(res.data.data);
+      setSections(res.data.data);
     } catch (err) {
       console.error("❌ Lỗi khi tải khu vực:", err);
       message.error("Không thể tải danh sách khu vực!");
@@ -107,12 +108,6 @@ function SectionSeatAdmin() {
       key: "seatCount",
     },
     {
-      title: "Giá vé (VNĐ)",
-      dataIndex: "price",
-      key: "price",
-      render: (price: number) => price.toLocaleString(),
-    },
-    {
       title: "Hành động",
       key: "actions",
       render: (_: any, record: Section) => (
@@ -165,15 +160,7 @@ function SectionSeatAdmin() {
           >
             <InputNumber min={1} />
           </Form.Item>
-
-          <Form.Item
-            name="price"
-            label="Giá vé"
-            rules={[{ required: true, message: "Nhập giá vé!" }]}
-          >
-            <InputNumber min={0} step={10000} />
-          </Form.Item>
-
+          
           <Form.Item>
             <Button
               type="primary"

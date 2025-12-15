@@ -1,30 +1,28 @@
 import app from "./app.js";
 import dotenv from "dotenv";
 import sequelize from "./config/db.js";
-import cron from "node-cron";
-import { releaseHeldTickets } from "./utils/releaseHeldTickets.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-    try {
-      // Mở kết nối database
-      await sequelize.authenticate();
-      // Đồng bộ models
-      await sequelize.sync();
-      app.listen(PORT, () => {
-        console.log(` Server is running on port ${PORT}`);
-      });
-      cron.schedule("* * * * *", async () => {
-        await releaseHeldTickets();
-      });
+  try {
+    // Mở kết nối database
+    await sequelize.authenticate();
+    console.log("Database connected successfully.");
 
-    } catch (error) {
-      console.error("Unable to connect to the database:", error.message);
-    }
-  };
-  
-  startServer();
-  
+    // Đồng bộ models
+    await sequelize.sync();
+
+    // Khởi chạy server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Unable to connect to the database:", error.message);
+  }
+};
+
+startServer();

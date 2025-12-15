@@ -5,8 +5,8 @@ import models from "../models/index.js";
 import { auth } from "../middlewares/auth.js";
 const router = express.Router();
 
-router.get("/:id",auth(),checkOwner(models.Booking),bookingController.getBookingById);
 router.get("/my",auth(),bookingController.getBookingByUserId);
+router.get("/:id",auth(),checkOwner(models.Booking),bookingController.getBookingById);
 router.post("/",auth(),bookingController.createBooking);
 router.delete("/:id",auth(),checkOwner(models.Booking),bookingController.deleteBooking);
 
