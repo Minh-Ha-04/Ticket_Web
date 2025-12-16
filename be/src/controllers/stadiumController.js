@@ -12,10 +12,23 @@ export const getAllStadiums = async(req,res) =>{
     }
 };
 
+export const getStadiumById = async(req,res)=>{
+    const {id} = req.params;
+    try {
+        const stadium = await stadiumService.getStadiumById(id);
+        if(!stadium) {
+            return res.status(404).json({ success: false, message: "Sân không tồn tại" });
+        }
+        return res.status(200).json({ success: true, data: stadium });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: "Lỗi server" });
+    }
+};
+
 export const createStadium = async(req,res) => {
     try{
-        const {name,capacity,isHome} = req.body;
-        const newStadium = await stadiumService.createStadium({name,capacity,isHome});
+        const {name,capacity} = req.body;
+        const newStadium = await stadiumService.createStadium({name,capacity});
         res.status(201).json(newStadium);
     }
     catch(error)
@@ -27,8 +40,8 @@ export const createStadium = async(req,res) => {
 export const updateStadium = async(req,res) => {
     try{
         const {id} = req.params;
-        const {name,capacity,isHome} = req.body;
-        const updated = await stadiumService.updateStadium(Number(id),{name,capacity,isHome});
+        const {name,capacity} = req.body;
+        const updated = await stadiumService.updateStadium(Number(id),{name,capacity});
         res.json(updated);
     }
     catch(error)

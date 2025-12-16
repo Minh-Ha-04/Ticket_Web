@@ -27,6 +27,13 @@ interface Section {
   price: number;
 }
 
+interface Stadium {
+  id: number;
+  name: string;
+}
+
+
+
 function SectionSeatAdmin() {
   const { id: stadiumId } = useParams<{ id: string }>();
   const [sections, setSections] = useState<Section[]>([]);
@@ -34,24 +41,40 @@ function SectionSeatAdmin() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-
+  const [stadium, setStadium] = useState<Stadium | null>(null);
   // 🔹 Lấy danh sách khu vực
+  const fetchStadium = async () => {
+    try {
+      const res = await instance.get(`/stadiums/${stadiumId}`);
+      console.log(res.data);
+      setStadium(res.data.data);
+    } catch (err) {
+      console.error("Lỗi khi tải thông tin sân:", err);
+      message.error("Không thể tải thông tin sân!");
+    }
+  };
+  
+
   useEffect(() => {
-    if (stadiumId) fetchSections();
+    if (stadiumId) {
+      fetchStadium();
+      fetchSections();
+    }
   }, [stadiumId]);
 
   const fetchSections = async () => {
     try {
       const res = await instance.get(`/sections/stadium/${stadiumId}`);
-      console.log(res.data.data);
+      console.log(res.data);
       setSections(res.data.data);
     } catch (err) {
-      console.error("❌ Lỗi khi tải khu vực:", err);
+      console.error("Lỗi khi tải khu vực:", err);
       message.error("Không thể tải danh sách khu vực!");
     }
   };
 
   const handleSubmit = async (values: any) => {
+    console.log("Submit values:", { ...values, stadiumId: Number(stadiumId) });
     try {
       if (editingId) {
         await instance.put(`/sections/${editingId}`, values);
@@ -67,7 +90,7 @@ function SectionSeatAdmin() {
       fetchSections();
     } catch (err) {
       console.error(err);
-      message.error("❌ Thao tác thất bại!");
+      message.error(" Thao tác thất bại!");
     }
   };
 
@@ -85,11 +108,11 @@ function SectionSeatAdmin() {
     if (!deleteId) return;
     try {
       await instance.delete(`/sections/${deleteId}`);
-      alert("🗑️ Xóa khu vực thành công!");
+      alert(" Xóa khu vực thành công!");
       fetchSections();
     } catch (err) {
       console.error(err);
-      message.error("❌ Xóa thất bại!");
+      message.error(" Xóa thất bại!");
     } finally {
       setIsModalVisible(false);
       setDeleteId(null);
@@ -135,9 +158,9 @@ function SectionSeatAdmin() {
   return (
     <div className={cx("wrapper")}>
       <Card className={cx("card")}>
-        <Title level={3} className={cx("title")}>
-          ⚙️ Quản lý khu vực & ghế của sân
-        </Title>
+          <Title level={3} className={cx("title")}>
+            Quản lý khu vực và ghế của sân {stadium?.name || ""}
+          </Title>
 
         <Form
           form={form}

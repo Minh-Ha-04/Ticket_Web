@@ -13,14 +13,12 @@ interface Stadium {
   id: number;
   name: string;
   capacity: number;
-  isHome: boolean;
 }
 
 function StadiumAdmin() {
   const [stadiums, setStadiums] = useState<Stadium[]>([]);
   const [name, setName] = useState("");
   const [capacity, setCapacity] = useState<number | "">("");
-  const [isHome, setIsHome] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -44,14 +42,14 @@ function StadiumAdmin() {
     try {
       if (editingId) {
         // Cập nhật sân
-        await instance.put(`/stadiums/${editingId}`, { name, capacity, isHome });
+        await instance.put(`/stadiums/${editingId}`, { name, capacity});
         alert("Cập nhật sân thành công!");
       } else {
         // Tạo sân mới
-        await instance.post('/stadiums', { name, capacity, isHome });
+        await instance.post('/stadiums', { name, capacity});
         alert("Tạo sân thành công!");
       }
-      setName(""); setCapacity(""); setIsHome(false); setEditingId(null);
+      setName(""); setCapacity(""); setEditingId(null);
       fetchStadiums();
     } catch (err) {
       console.error(err);
@@ -62,7 +60,6 @@ function StadiumAdmin() {
   const handleEdit = (stadium: Stadium) => {
     setName(stadium.name);
     setCapacity(stadium.capacity);
-    setIsHome(stadium.isHome);
     setEditingId(stadium.id);
   };
 
@@ -104,10 +101,6 @@ function StadiumAdmin() {
           <label>Sức chứa</label>
           <input type="number" value={capacity} onChange={e => setCapacity(Number(e.target.value))} />
         </div>
-        <div className={cx('form-group')}>
-          <label>Sân nhà</label>
-          <input type="checkbox" checked={isHome} onChange={e => setIsHome(e.target.checked)} />
-        </div>
         <button type="submit">{editingId ? "Cập nhật" : "Tạo sân"}</button>
       </form>
 
@@ -117,7 +110,6 @@ function StadiumAdmin() {
           <tr>
             <th>Tên sân</th>
             <th>Sức chứa</th>
-            <th>Sân nhà</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -126,14 +118,9 @@ function StadiumAdmin() {
             <tr key={stadium.id}>
               <td>{stadium.name}</td>
               <td>{stadium.capacity}</td>
-              <td>{stadium.isHome ? (
-                <Button type="primary" onClick={() => handleManageSections(stadium.id)}>
-                Settings
-                </Button>
-              )
-              : "Không"}</td>
               <td>
-                <button onClick={() => handleEdit(stadium)}>Sửa</button>
+                <button onClick={() => handleManageSections(stadium.id)}> Chỉnh khu </button>
+                <button onClick={() => handleEdit(stadium)}>Sửa thông tin</button>
                 <button onClick={() => showDeleteModal(stadium.id)}>Xóa</button>
               </td>
             </tr>

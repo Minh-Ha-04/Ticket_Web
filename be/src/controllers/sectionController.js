@@ -16,8 +16,7 @@ export const getAllSections = async (req, res) => {
 
 export const createSection = async (req, res) => {
   try {
-    const { name, stadiumId } = req.body;
-    const section = await sectionService.createSection({ name, stadiumId });
+    const section = await sectionService.createSection(req.body);
     res.status(201).json({ success: true, data: section });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -25,11 +24,12 @@ export const createSection = async (req, res) => {
 };
 
 
+
 export const updateSection = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
-    const section = await sectionService.updateSection(id, { name });
+    const { name, seatCount } = req.body;
+    const section = await sectionService.updateSection(id, { name, seatCount });    
     res.json({ success: true, data: section });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -41,7 +41,7 @@ export const deleteSection = async (req, res) => {
   try {
     const { id } = req.params;
     await sectionService.deleteSection(id);
-    res.json({ message: "Delete section successfully" });
+    res.json({ success: true, message: "Xóa section thành công" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

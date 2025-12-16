@@ -7,7 +7,6 @@ export const createSectionMatches = async (matchId, sections) => {
     const result = [];
 
     for (const sec of sections) {
-      // tránh tạo trùng
       const [sm, created] = await SectionMatch.findOrCreate({
         where: {
           matchId,
@@ -22,7 +21,6 @@ export const createSectionMatches = async (matchId, sections) => {
         lock: t.LOCK.UPDATE,
       });
 
-      // nếu đã tồn tại thì update (admin chỉnh lại)
       if (!created) {
         sm.price = sec.price;
         sm.totalSeats = sec.totalSeats;

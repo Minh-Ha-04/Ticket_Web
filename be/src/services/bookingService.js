@@ -3,9 +3,8 @@ import { nanoid } from "nanoid";
 import * as sectionMatchService from "./sectionMatchService.js";
 
 const { Booking, Ticket, SectionMatch,Section,Match,Team,Stadium } = models;
-
+const HOLD_DURATION = 2 * 60 * 1000;
 export const createBooking = async (userId, matchId, items) => {
-  // items = [{ sectionMatchId, quantity }]
   return await sequelize.transaction(async (t) => {
 
     const booking = await Booking.create(
@@ -31,6 +30,7 @@ export const createBooking = async (userId, matchId, items) => {
             sectionMatchId: sm.id,
             price: sm.price,
             status: 'held',
+            holdExpiresAt: new Date(Date.now() + HOLD_DURATION),
           },
           { transaction: t }
         );

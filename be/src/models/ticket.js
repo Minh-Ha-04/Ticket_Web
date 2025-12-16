@@ -24,7 +24,12 @@ const Ticket = sequelize.define("Ticket", {
   status: {
     type: DataTypes.ENUM('held','sold', 'used', 'canceled'),
     defaultValue: 'held'
+  },
+  holdExpiresAt: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
+  
   }, { timestamps: true });
   
   Ticket.associate = (models) => {

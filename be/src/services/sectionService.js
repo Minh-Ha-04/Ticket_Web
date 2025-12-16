@@ -16,14 +16,15 @@ export const getAllSections = async (stadiumId) => {
 };
 
 export const createSection = async (data) => {
-  const { name, stadiumId } = data;
+  const { name, stadiumId, seatCount} = data;
 
-  if (!name || !stadiumId) {
-    throw new Error("Thiếu name hoặc stadiumId");
+  if (!name || !stadiumId || seatCount == null) {
+    throw new Error("Thiếu name, stadiumId hoặc seatCount");
   }
 
-  return await Section.create({ name, stadiumId });
+  return await Section.create({ name, stadiumId, seatCount});
 };
+
 
 export const updateSection = async (id, data) => {
   const section = await Section.findByPk(id);

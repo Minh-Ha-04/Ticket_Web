@@ -4,6 +4,7 @@ import { auth } from "../middlewares/auth.js";
 const router = express.Router();
 
 router.get("/",stadiumController.getAllStadiums);
+router.get("/:id",auth(['admin']),stadiumController.getStadiumById);
 router.post("/",auth(['admin']),stadiumController.createStadium);
 router.put("/:id",auth(['admin']),stadiumController.updateStadium);
 router.delete("/:id",auth(['admin']),stadiumController.deleteStadium);

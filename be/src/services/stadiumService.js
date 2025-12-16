@@ -15,6 +15,10 @@ export const getAllStadiums = async (page = 1, pageSize = 10) => {
     };
 }
 
+export const getStadiumById = async(id)=>{
+    return await Stadium.findByPk(id);
+}
+
 export const createStadium = async (stadiumData) => {
     return await Stadium.create(stadiumData);
 }

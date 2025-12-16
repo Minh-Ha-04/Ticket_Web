@@ -87,9 +87,10 @@ export const momoIpn = async (req, res) => {
       const booking = await Booking.findByPk(payment.bookingId);
       if (booking) await booking.update({ status: "paid" });
       
-      // Update ticket
-      await Ticket.update({ status: "sold" }, { where: { bookingId: booking.id } });
-
+      await Ticket.update(
+        { status: "sold", holdExpiresAt: null },
+        { where: { bookingId: booking.id } }
+      )
       // Gửi email
       const user = await models.User.findByPk(payment.userId);
       if (user) {
