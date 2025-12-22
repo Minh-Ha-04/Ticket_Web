@@ -12,11 +12,15 @@ import {
   Form,
   Select,
   DatePicker,
+  Upload,
 } from "antd";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-dayjs.extend(customParseFormat);
 
 const cx = classNames.bind(styles);
 const { Title } = Typography;
@@ -25,7 +29,7 @@ const { Option } = Select;
 interface Team {
   id: number;
   name: string;
-  logo:string;
+  logo: string;
 }
 
 interface Stadium {
@@ -37,11 +41,12 @@ interface Match {
   id: number;
   homeTeamId: number;
   awayTeamId: number;
-  matchDate: string;
   stadiumId: number;
-  homeTeam : Team;
-  awayTeam : Team;
-  stadium : Stadium;
+  matchDate: string;
+  poster: string;
+  homeTeam: Team;
+  awayTeam: Team;
+  stadium: Stadium;
 }
 
 function MatchAdmin() {
@@ -51,31 +56,31 @@ function MatchAdmin() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
 
-  const [form] = Form.useForm();
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [posterPreview, setPosterPreview] = useState<string | null>(null);
 
-  // 🔹 Load dữ liệu
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [form] = Form.useForm();
+
   useEffect(() => {
     fetchAll();
   }, []);
 
   const fetchAll = async () => {
     try {
-      const [matchRes, teamRes, stadiumRes] = await Promise.all([
+      const [m, t, s] = await Promise.all([
         instance.get("/matches"),
         instance.get("/teams"),
         instance.get("/stadiums"),
       ]);
-      setMatches(matchRes.data);
-      setTeams(teamRes.data.teams);
-      setStadiums(stadiumRes.data.stadiums);
-    } catch (err) {
-      console.error(err);
-      message.error("❌ Lỗi khi tải dữ liệu!");
+      setMatches(m.data);
+      setTeams(t.data.teams);
+      setStadiums(s.data.stadiums);
+    } catch {
+      message.error("❌ Không tải được dữ liệu");
     }
   };
 
-  // 🔹 Modal Thêm/Sửa
   const openModal = (match?: Match) => {
     if (match) {
       setEditingMatch(match);
@@ -85,53 +90,62 @@ function MatchAdmin() {
         stadiumId: match.stadiumId,
         matchDate: dayjs(match.matchDate),
       });
+      setPosterPreview(match.poster || null);
     } else {
       setEditingMatch(null);
       form.resetFields();
+      setPosterPreview(null);
     }
+    setPosterFile(null);
     setIsModalVisible(true);
   };
 
   const handleSubmit = async (values: any) => {
     try {
-      console.log("Form values:", values);
-      const payload = {
-        ...values,
-        matchDate: values.matchDate.format("YYYY-MM-DD HH:mm:ss"),
-      };
-      console.log(payload);
+      const formData = new FormData();
+      formData.append("homeTeamId", values.homeTeamId);
+      formData.append("awayTeamId", values.awayTeamId);
+      formData.append("stadiumId", values.stadiumId);
+      formData.append(
+        "matchDate",
+        values.matchDate.format("YYYY-MM-DD HH:mm:ss")
+      );
+
+      if (posterFile) {
+        formData.append("poster", posterFile);
+      }
+      const obj: any = {};
+      formData.forEach((v, k) => (obj[k] = v));
+      console.log(obj);
+
       if (editingMatch) {
-        await instance.put(`/matches/${editingMatch.id}`, payload);
+        await instance.put(`/matches/${editingMatch.id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        message.success("Cập nhật thành công");
       } else {
-        await instance.post("/matches", payload);
+        await instance.post("/matches", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        message.success("Thêm trận đấu thành công");
       }
 
       setIsModalVisible(false);
-      form.resetFields();
-      setEditingMatch(null);
       fetchAll();
     } catch (err) {
       console.error(err);
-      message.error(" Thao tác thất bại!");
+      message.error("Thao tác thất bại");
     }
-  };
-
-  // 🔹 Xóa trận đấu
-  const handleDelete = (id: number) => {
-    setDeleteId(id);
-    setIsModalVisible(true);
   };
 
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
       await instance.delete(`/matches/${deleteId}`);
+      message.success("Xóa thành công");
       fetchAll();
-    } catch (err) {
-      console.error(err);
     } finally {
-      setDeleteId(null);  
-      setIsModalVisible(false);
+      setDeleteId(null);
     }
   };
 
@@ -139,20 +153,28 @@ function MatchAdmin() {
     {
       title: "Đội nhà",
       key: "homeTeam",
-      render: (_: any, record: Match) => (
+      render: (_: any, r: Match) => (
         <div className={cx("teamCell")}>
-          <img src={record.homeTeam.logo} alt={record.homeTeam.name} />
-          <span>{record.homeTeam.name}</span>
+          {r.homeTeam && (
+            <>
+              <img src={r.homeTeam.logo} alt={r.homeTeam.name} />
+              <span>{r.homeTeam.name}</span>
+            </>
+          )}
         </div>
       ),
     },
     {
       title: "Đội khách",
       key: "awayTeam",
-      render: (_: any, record: Match) => (
+      render: (_: any, r: Match) => (
         <div className={cx("teamCell")}>
-          <img src={record.awayTeam.logo} alt={record.awayTeam.name} />
-          <span>{record.awayTeam.name}</span>
+          {r.awayTeam && (
+            <>
+              <img src={r.awayTeam.logo} alt={r.awayTeam.name} />
+              <span>{r.awayTeam.name}</span>
+            </>
+          )}
         </div>
       ),
     },
@@ -168,18 +190,22 @@ function MatchAdmin() {
       render: (date: string) => dayjs(date).format("HH:mm DD/MM/YYYY"),
     },
     {
+      title: "Poster",
+      key: "poster",
+      render: (_: any, r: Match) =>
+        r.poster ? <img src={r.poster} style={{ width: 80 }} /> : "—",
+    },
+    {
       title: "Hành động",
-      key: "actions",
-      render: (_: any, record: Match) => (
+      render: (_: any, r: Match) => (
         <Space>
-          <Button icon={<EditOutlined />} type="link" onClick={() => openModal(record)}>
+          <Button icon={<EditOutlined />} onClick={() => openModal(r)}>
             Sửa
           </Button>
           <Button
-            icon={<DeleteOutlined />}
-            type="link"
             danger
-            onClick={() => setDeleteId(record.id)}
+            icon={<DeleteOutlined />}
+            onClick={() => setDeleteId(r.id)}
           >
             Xóa
           </Button>
@@ -190,62 +216,93 @@ function MatchAdmin() {
 
   return (
     <div className={cx("wrapper")}>
-      <Title level={3} className={cx("title")}>
-        ⚽ Quản lý trận đấu
-      </Title>
+      <Title level={3}> Quản lý trận đấu</Title>
 
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        onClick={() => openModal()}
+      >
         Thêm trận đấu
       </Button>
 
-      <Table dataSource={matches} columns={columns} rowKey="id" bordered className={cx("table")} style={{ marginTop: 16 }} />
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={matches}
+        style={{ marginTop: 16 }}
+      />
 
-      {/* Modal Thêm/Sửa */}
       <Modal
-        title={editingMatch ? "Cập nhật trận đấu" : "Thêm trận đấu mới"}
-        open={isModalVisible && !deleteId}
+        title={editingMatch ? "Cập nhật trận đấu" : "Thêm trận đấu"}
+        open={isModalVisible}
         onOk={() => form.submit()}
         onCancel={() => setIsModalVisible(false)}
-        okText={editingMatch ? "Cập nhật" : "Thêm"}
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item name="homeTeamId" label="Đội nhà" rules={[{ required: true }]}>
-            <Select placeholder="Chọn đội nhà">
+            <Select>
               {teams.map((t) => (
-                <Option key={t.id} value={t.id}>{t.name}</Option>
+                <Option key={t.id} value={t.id}>
+                  {t.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item name="awayTeamId" label="Đội khách" rules={[{ required: true }]}>
-            <Select placeholder="Chọn đội khách">
+            <Select>
               {teams.map((t) => (
-                <Option key={t.id} value={t.id}>{t.name}</Option>
+                <Option key={t.id} value={t.id}>
+                  {t.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item name="stadiumId" label="Sân" rules={[{ required: true }]}>
-            <Select placeholder="Chọn sân">
+            <Select>
               {stadiums.map((s) => (
-                <Option key={s.id} value={s.id}>{s.name}</Option>
+                <Option key={s.id} value={s.id}>
+                  {s.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>
+
           <Form.Item name="matchDate" label="Ngày thi đấu" rules={[{ required: true }]}>
-            <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
+            <DatePicker showTime style={{ width: "100%" }} />
           </Form.Item>
+
+          <div style={{ marginBottom: 16 }}>
+            <strong>Poster:</strong>
+            <Upload
+              beforeUpload={(file) => {
+                setPosterFile(file);
+                setPosterPreview(URL.createObjectURL(file));
+                return false;
+              }}
+              maxCount={1}
+            >
+              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+            </Upload>
+
+            {posterPreview && (
+              <img
+                src={posterPreview}
+                style={{ width: "100%", marginTop: 12 }}
+              />
+            )}
+          </div>
         </Form>
       </Modal>
-
-      {/* Modal Xóa */}
       <Modal
-        title="Xác nhận xóa trận đấu"
+        title="Xác nhận xóa"
         open={!!deleteId}
         onOk={confirmDelete}
         onCancel={() => setDeleteId(null)}
-        okText="Xóa"
-        cancelText="Hủy"
       >
-        <p>Bạn có chắc chắn muốn xóa trận đấu này không?</p>
+        <p>Bạn có chắc chắn muốn xóa trận đấu này?</p>
       </Modal>
     </div>
   );

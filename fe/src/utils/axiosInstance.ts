@@ -16,7 +16,6 @@ const instance = axios.create({
   },
 });
 
-
 instance.interceptors.request.use(
   (config) => {
     // bật loading
@@ -43,9 +42,19 @@ instance.interceptors.response.use(
   },
   (error) => {
     if (setLoadingGlobal) setLoadingGlobal(false);
-    console.error("API error:", error);
+
+    const status = error.response?.status;
+
+    if (status === 401) {
+      // clear auth
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+    }
+
     return Promise.reject(error);
   }
 );
+
 
 export default instance;

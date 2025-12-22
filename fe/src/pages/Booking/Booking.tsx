@@ -24,11 +24,8 @@ function Booking() {
   const navigate = useNavigate();
   const [sections, setSections] = useState<SectionMatch[]>([]);
   const [selectedItems, setSelectedItems] = useState<BookingItem[]>([]);
-  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUserId(JSON.parse(storedUser).id);
     const fetchSections = async () => {
       try {
         const res = await instance.get(`/section-match/${matchId}`);
@@ -60,32 +57,24 @@ function Booking() {
   }, 0);
 
   const handleConfirm = async () => {
-    if (!userId) {
-      message.warning("Vui lòng đăng nhập để đặt vé!");
-      navigate("/login");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      message.info("Bạn cần đăng nhập để đặt vé");
+      setTimeout(() => navigate("/login"), 500);
       return;
     }
-
-    const filteredItems = selectedItems.filter(i => i.quantity > 0);
-    if (!filteredItems.length) {
-      message.warning("Vui lòng chọn số lượng ghế!");
-      return;
-    }
-
+  
     try {
-      const filteredItems = selectedItems.filter(i => i.quantity > 0);
       const res = await instance.post("/bookings", {
-        userId,
         matchId,
-        items: filteredItems
+        items: selectedItems
       });
-      message.success("Đặt vé thành công! Chuyển đến trang thanh toán...");
       navigate(`/payment/${res.data.data.booking.id}`);
     } catch (err: any) {
-      console.error(err);
       message.error(err.response?.data?.message || "Đặt vé thất bại");
     }
   };
+  
 
   return (
     <div className={cx("booking")}>

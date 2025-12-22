@@ -50,13 +50,14 @@ export const getMatchById = async (matchId) => {
   return match;
 };
 
-// Tạo trận và tự động tạo SectionMatch
 export const createMatch = async (data) => {
-  const { stadiumId, ...matchData } = data;
+  const { stadiumId, poster, posterPublicId, ...matchData } = data;
 
   const match = await Match.create({
     ...matchData,
-    stadiumId, 
+    stadiumId,
+    poster,
+    posterPublicId,
   });
 
   const sections = await Section.findAll({ where: { stadiumId } });
@@ -66,7 +67,7 @@ export const createMatch = async (data) => {
     sectionId: sec.id,
     totalSeats: sec.seatCount,
     availableSeats: sec.seatCount,
-    price : 0,
+    price: 0,
   }));
 
   await SectionMatch.bulkCreate(sectionMatchesData);
@@ -75,10 +76,12 @@ export const createMatch = async (data) => {
 };
 
 
-// Cập nhật trận
+
 export const updateMatch = async (id, data) => {
-  const [updatedCount] = await Match.update(data, { where: { id } });
-  if (updatedCount === 0) throw new Error(`Không tìm thấy trận đấu id: ${id}`);
+  const match = await Match.findByPk(id);
+  if (!match) throw new Error(`Không tìm thấy trận đấu id: ${id}`);
+
+  await match.update(data);
 
   return await Match.findByPk(id, {
     include: [
