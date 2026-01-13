@@ -26,7 +26,7 @@ function PaymentSuccess() {
 
       {status === "success" && (
         <>
-          <h2>🎉 Thanh toán thành công!</h2>
+          <h2> Thanh toán thành công!</h2>
           <p>Mã đơn hàng: {searchParams.get("orderId")}</p>
           <button onClick={() => navigate("/")}>Về trang chủ</button>
         </>
@@ -34,7 +34,7 @@ function PaymentSuccess() {
 
       {status === "fail" && (
         <>
-          <h2>❌ Thanh toán thất bại</h2>
+          <h2> Thanh toán thất bại</h2>
           <p>Lý do: {searchParams.get("message") || "Không xác định"}</p>
           <button onClick={() => navigate("/ticket")}>Thử lại</button>
         </>

@@ -46,9 +46,9 @@ function Header() {
       </div>
 
       <div className={cx("center")}>
-        <Link to="/"> Trang chủ </Link>
-        <Link to="/ticket"> Mua vé </Link>
-        <Link to="/calendar"> Lịch thi đấu </Link>
+        <Link className={cx("children")} to="/"> Trang chủ </Link>
+        <Link className={cx("children")} to="/ticket"> Mua vé </Link>
+        <Link className={cx("children")} to="/calendar"> Lịch thi đấu </Link>
       </div>
 
       <div className={cx("right")}>

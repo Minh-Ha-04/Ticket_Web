@@ -152,7 +152,7 @@ function Payment() {
       const res = await instance.post(
         `/pays/create`,
         {
-          method: paymentMethod.toLowerCase() === 'momo' ? 'momo' : 'vnpay',
+          method: 'momo',
           amount: total,
           bookingId,
           discountCode,
@@ -213,7 +213,6 @@ function Payment() {
           style={{ marginLeft: 16 }}
         >
           <Radio value="Momo">Ví MoMo</Radio>
-          <Radio value="VnPay">VNPay</Radio>
         </Radio.Group>
       </div>
 

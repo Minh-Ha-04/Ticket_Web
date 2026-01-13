@@ -41,11 +41,6 @@ export const createPayment = async (req, res) => {
       case "momo":
         payUrl = await  paymentService.createMomoPayment(amount, `Thanh toán đơn #${bookingId}`, orderId);
         break;
-
-      case "vnpay":
-        payUrl = await paymentService.createVNPayPayment(amount, `Thanh toán đơn #${bookingId}`, ipAddr);
-        break;
-
       default:
         return res.status(400).json({ message: "Phương thức thanh toán không hợp lệ" });
     }
@@ -96,7 +91,7 @@ export const momoIpn = async (req, res) => {
       if (user) {
         const tickets = await Ticket.findAll({ where: { bookingId: booking.id } });
         const htmlContent = ticketTemplate(booking, tickets);
-        await sendEmail(user.email, "🎫 Xác nhận đặt vé thành công", htmlContent);
+        await sendEmail(user.email, " Xác nhận đặt vé thành công", htmlContent);
       }
 
       return res.status(200).json({ message: "Confirm success" });
