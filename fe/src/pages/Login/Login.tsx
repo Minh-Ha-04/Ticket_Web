@@ -1,6 +1,6 @@
 import styles from "./Login.module.scss";
 import classNames from "classnames/bind";
-import { Button, message, Spin } from "antd";
+import { Button, message } from "antd";
 import { useState, ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import instance from "../../utils/axiosInstance";

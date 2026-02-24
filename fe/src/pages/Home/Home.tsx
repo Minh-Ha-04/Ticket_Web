@@ -6,11 +6,6 @@ import UpcomingMatches from "../../components/UpcomingMatches.tsx";
 
 const cx = classNames.bind(styles);
 
-interface User {
-  username: string;
-  email: string;
-}
-
 interface Picture {
   id: number;
   url: string;
@@ -18,15 +13,10 @@ interface Picture {
 }
 
 function Home() {
-  const [user, setUser] = useState<User | null>(null);
   const [poster, setPoster] = useState<Picture | null>(null);
   const [ads, setAds] = useState<Picture[]>([]);
 
-  // 🔹 Lấy thông tin user
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) setUser(JSON.parse(userData));
-  }, []);
+
 
   // 🔹 Lấy poster và quảng cáo
   useEffect(() => {

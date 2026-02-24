@@ -37,7 +37,6 @@ interface Match {
 
 function Calendar() {
   const [matches, setMatches] = useState<Match[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -53,7 +52,7 @@ function Calendar() {
         const response = await instance.get<Match[]>("/matches");
         setMatches(response.data);
       } catch (err: any) {
-        setError(err?.message || "Đã có lỗi xảy ra");
+        console.error(err);
       }
     };
     fetchMatches();

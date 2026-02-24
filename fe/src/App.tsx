@@ -2,7 +2,7 @@
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import routes from "./routes";
 
-// 🟦 Thêm các import cho loading
+//  Thêm các import cho loading
 import { useEffect, useContext } from "react";
 import { LoadingProvider,LoadingContext } from "./contexts/LoadingContext";
 import LoadingOverlay from "./components/LoadingOverlay";
@@ -19,7 +19,7 @@ function AppWrapper() {
   // Đăng ký setLoading vào axios interceptor
   useEffect(() => {
     registerSetLoading(setLoading);
-  }, []);
+  }, [setLoading]);
 
   return (
     <>

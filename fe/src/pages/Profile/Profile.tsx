@@ -28,7 +28,6 @@ interface BookingItem {
 
 function Profile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
   const [form, setForm] = useState({ username: "", phone: "" });
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -44,8 +43,6 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       const res = await instance.get("/profile");
-      const idUser = res.data.data.id;
-      setUserId(idUser);
       setProfile(res.data.data);
 
       setForm({

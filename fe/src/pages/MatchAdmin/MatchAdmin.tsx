@@ -193,7 +193,7 @@ function MatchAdmin() {
       title: "Poster",
       key: "poster",
       render: (_: any, r: Match) =>
-        r.poster ? <img src={r.poster} style={{ width: 80 }} /> : "—",
+        r.poster ? <img src={r.poster} style={{ width: 80 }} alt="poster"/> : "—",
     },
     {
       title: "Hành động",
@@ -289,6 +289,7 @@ function MatchAdmin() {
 
             {posterPreview && (
               <img
+                alt="poster"
                 src={posterPreview}
                 style={{ width: "100%", marginTop: 12 }}
               />

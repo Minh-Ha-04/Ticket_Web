@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styles from './StadiumAdmin.module.scss';
 import classNames from 'classnames/bind';
 import instance from "../../utils/axiosInstance";
-import {Modal,Button} from 'antd';
+import {Modal} from 'antd';
 
 
 const cx = classNames.bind(styles);

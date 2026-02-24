@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./SectionSeatAdmin.module.scss";
 import classNames from "classnames/bind";
@@ -43,35 +44,34 @@ function SectionSeatAdmin() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [stadium, setStadium] = useState<Stadium | null>(null);
   // 🔹 Lấy danh sách khu vực
-  const fetchStadium = async () => {
+  const fetchStadium = useCallback(async () => {
     try {
       const res = await instance.get(`/stadiums/${stadiumId}`);
-      console.log(res.data);
       setStadium(res.data.data);
     } catch (err) {
       console.error("Lỗi khi tải thông tin sân:", err);
       message.error("Không thể tải thông tin sân!");
     }
-  };
+  }, [stadiumId]);
   
+
+
+  const fetchSections = useCallback(async () => {
+    try {
+      const res = await instance.get(`/sections/stadium/${stadiumId}`);
+      setSections(res.data.data);
+    } catch (err) {
+      console.error("Lỗi khi tải khu vực:", err);
+      message.error("Không thể tải danh sách khu vực!");
+    }
+  }, [stadiumId]);
 
   useEffect(() => {
     if (stadiumId) {
       fetchStadium();
       fetchSections();
     }
-  }, [stadiumId]);
-
-  const fetchSections = async () => {
-    try {
-      const res = await instance.get(`/sections/stadium/${stadiumId}`);
-      console.log(res.data);
-      setSections(res.data.data);
-    } catch (err) {
-      console.error("Lỗi khi tải khu vực:", err);
-      message.error("Không thể tải danh sách khu vực!");
-    }
-  };
+  }, [stadiumId, fetchStadium, fetchSections]);
 
   const handleSubmit = async (values: any) => {
     console.log("Submit values:", { ...values, stadiumId: Number(stadiumId) });
