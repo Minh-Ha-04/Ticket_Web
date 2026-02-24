@@ -35,7 +35,9 @@ const SectionMatch = sequelize.define("SectionMatch", {
       unique: true,
       fields: ['matchId', 'sectionId']
     }
-  ]
+  ],
+  tableName : "sectionmatches",
+  freezeTableName : true
 });
 
 // Associations

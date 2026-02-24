@@ -23,19 +23,5 @@ Object.keys(models).forEach((modelName) => {
   } 
 }); // Thiết lập quan hệ giữa các model 
 
-
-
-(async () => {
-    try {
-      await sequelize.sync({ alter: true });
-      console.log(
-        "Database synced successfully at",
-        new Date().toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })
-      );
-    } catch (error) {
-      console.error("Error syncing database:", error);
-    }
-  })();
-
   export default models;
   export { sequelize };

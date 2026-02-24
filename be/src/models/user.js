@@ -13,6 +13,8 @@ const User = sequelize.define("User", {
     verificationToken: { type: DataTypes.STRING, allowNull: true },
 }, {
     timestamps: true,
+    tableName : "users",
+    freezeTableName : true
 });
 
 User.associations = (models) => {

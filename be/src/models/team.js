@@ -10,7 +10,9 @@ const Team = sequelize.define("Team", {
     shortname : { type: DataTypes.STRING, allowNull: true },
     stadiumId : { type: DataTypes.INTEGER, allowNull: true}
 }, {
-    timestamps: true,
+  timestamps: true,
+  tableName : "teams",
+  freezeTableName : true
 });
 
 Team.associate = (models) => {

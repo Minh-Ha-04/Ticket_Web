@@ -14,9 +14,6 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("Database connected successfully.");
 
-    // Đồng bộ models
-    // await sequelize.sync();
-
     // Khởi chạy server
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

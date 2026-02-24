@@ -7,8 +7,9 @@ const Stadium = sequelize.define("Stadium", {
     name: { type: DataTypes.STRING, allowNull: false, unique: true },
     capacity : { type: DataTypes.INTEGER, allowNull: true },
 }, {
-    tableName : "stadiums",
-    timestamps: true,
+  timestamps: true,
+  tableName : "stadiums",
+  freezeTableName : true
 });
 
 Stadium.associate = (models) => {

@@ -11,6 +11,8 @@ const Cart = sequelize.define("Cart", {
     status : { type: DataTypes.ENUM('active', 'purchased','canceled'), allowNull: false, defaultValue: 'active' },
 }, {
     timestamps: true,
+    tableName : "carts",
+    freezeTableName : true
 });
 
 Cart.associations = (models) => {

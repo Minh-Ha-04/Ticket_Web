@@ -13,6 +13,8 @@ const Payment = sequelize.define("Payment", {
 }, {
     timestamps: true,
     paranoid:true,
+    tableName : "payments",
+    freezeTableName : true
 });
 
 Payment.associate = (models) => {

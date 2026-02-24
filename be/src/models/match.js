@@ -19,6 +19,8 @@ const Match = sequelize.define("Match", {
 }, {
     timestamps: true,
     paranoid : true,
+    tableName : "matches",
+    freezeTableName : true
 });
 
 Match.associate = (models) => {

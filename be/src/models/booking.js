@@ -12,6 +12,8 @@ const Booking = sequelize.define("Booking", {
 }, {
     timestamps: true,
     paranoid: true,
+    tableName : "bookings",
+    freezeTableName : true
 });
 
 Booking.associate = (models) => {

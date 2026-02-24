@@ -24,6 +24,8 @@ const Discount = sequelize.define("Discount", {
       fields: ["code", "matchId"],
     },
   ],
+    tableName : "discounts",
+    freezeTableName : true
 });
 
 

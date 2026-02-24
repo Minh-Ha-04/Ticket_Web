@@ -30,7 +30,11 @@ const Ticket = sequelize.define("Ticket", {
     allowNull: true
   }
   
-  }, { timestamps: true });
+  }, { 
+    timestamps: true,
+    tableName : "tickets",
+    freezeTableName : true
+   });
   
   Ticket.associate = (models) => {
     Ticket.belongsTo(models.SectionMatch, { foreignKey: 'sectionMatchId', as: 'sectionMatch' });
