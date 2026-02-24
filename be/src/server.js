@@ -7,7 +7,7 @@ import { releaseHeldTickets } from "./services/ticketService.js";
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-console.log("PORT FROM ENV:", process.env.PORT);
+
 const startServer = async () => {
   try {
     // Mở kết nối database
@@ -15,7 +15,7 @@ const startServer = async () => {
     console.log("Database connected successfully.");
 
     // Khởi chạy server
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server is running on port ${PORT}`);
     });
 
