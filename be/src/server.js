@@ -15,7 +15,7 @@ const startServer = async () => {
     console.log("Database connected successfully.");
 
     // Khởi chạy server
-    app.listen(PORT, () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server is running on port ${PORT}`);
     });
 
