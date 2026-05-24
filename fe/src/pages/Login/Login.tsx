@@ -74,7 +74,10 @@ function Login() {
         if (role === "admin") {
           navigate("/admin");
         } else {
-          navigate("/");
+          // Quay về trang đang xem trước khi bị bắt đăng nhập
+          const redirectTo = localStorage.getItem("redirectAfterLogin");
+          localStorage.removeItem("redirectAfterLogin");
+          navigate(redirectTo || "/");
         }
       }      
     } catch (err: any) {

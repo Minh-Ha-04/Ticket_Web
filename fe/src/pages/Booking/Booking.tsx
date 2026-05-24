@@ -60,6 +60,8 @@ function Booking() {
     const token = localStorage.getItem("token");
     if (!token) {
       message.info("Bạn cần đăng nhập để đặt vé");
+      // Lưu lại trang hiện tại để sau khi đăng nhập quay về
+      localStorage.setItem("redirectAfterLogin", `/ticket/${matchId}`);
       setTimeout(() => navigate("/login"), 500);
       return;
     }

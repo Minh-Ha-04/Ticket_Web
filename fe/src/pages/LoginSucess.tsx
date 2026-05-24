@@ -45,7 +45,10 @@ function LoginSuccess() {
         if (user.role === "admin") {
           navigate("/admin", { replace: true });
         } else {
-          navigate("/", { replace: true });
+          // Quay về trang đang xem trước khi bị bắt đăng nhập
+          const redirectTo = localStorage.getItem("redirectAfterLogin");
+          localStorage.removeItem("redirectAfterLogin");
+          navigate(redirectTo || "/", { replace: true });
         }
       } catch (err) {
         message.error("Không lấy được thông tin người dùng!");
