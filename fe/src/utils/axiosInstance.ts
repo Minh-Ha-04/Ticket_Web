@@ -46,10 +46,12 @@ instance.interceptors.response.use(
     const status = error.response?.status;
 
     if (status === 401) {
-      // clear auth
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-
+      // Chỉ xóa token khi server trả 401 (token hết hạn/không hợp lệ)
+      // Không xóa khi lỗi mạng (error.response === undefined)
+      if (error.response) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     }
 
     return Promise.reject(error);

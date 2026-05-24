@@ -9,8 +9,8 @@ export const createMomoPayment = async (amount, orderInfo,orderId) => {
     const accessKey = process.env.MOMO_ACCESS_KEY;
     const secretKey = process.env.MOMO_SECRET_KEY;    
     const requestId = orderId
-    const redirectUrl = `http://localhost:3000/payment-success?orderId=${orderId}`;
-    const ipnUrl = "https://prehostile-earthen-willette.ngrok-free.dev/api/pays/momo-ipn";
+    const redirectUrl = `${process.env.CLIENT_URL}/payment-success?orderId=${orderId}`;
+    const ipnUrl = `${process.env.BACKEND_URL}/api/pays/momo-ipn`;
     const requestType = "captureWallet";
     const extraData = "";
   

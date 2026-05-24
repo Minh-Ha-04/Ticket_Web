@@ -29,7 +29,7 @@ export const createPayment = async (req, res) => {
       });
 
       if (discountCode) {
-        const discount = await Discount.findOne({ code: discountCode });
+        const discount = await Discount.findOne({ where: { code: discountCode } });
         if (discount) {
           discount.usedCount += 1;
           await discount.save();

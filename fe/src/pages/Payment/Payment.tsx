@@ -160,8 +160,12 @@ function Payment() {
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.data.payUrl) window.location.href = res.data.payUrl;
-      else alert("Không thể tạo phiên thanh toán, vui lòng thử lại!");
+      if (res.data.payUrl) {
+        // Mở MoMo trong tab mới để giữ session đăng nhập
+        window.open(res.data.payUrl, "_blank");
+      } else {
+        alert("Không thể tạo phiên thanh toán, vui lòng thử lại!");
+      }
     } catch (err) {
       console.error(err);
       alert("Thanh toán thất bại!");

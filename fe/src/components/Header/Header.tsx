@@ -21,9 +21,17 @@ function Header() {
       try {
         await instance.get("/auth/me");
         setIsLoggedIn(true);
-      } catch (error) {
-        localStorage.removeItem("token");
-        setIsLoggedIn(false);
+      } catch (error: any) {
+        const status = error?.response?.status;
+        if (status === 401 || status === 403) {
+          // Token thực sự hết hạn hoặc không hợp lệ → xóa
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setIsLoggedIn(false);
+        } else {
+          // Lỗi mạng, server timeout, Render cold start... → giữ nguyên token
+          setIsLoggedIn(true);
+        }
       }
     };
   
